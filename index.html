@@ -11,7 +11,7 @@
         body {
             font-family: 'Khmer OS Battambang', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 30px auto;
             padding: 20px;
             color: #1e293b;
@@ -42,7 +42,7 @@
         }
         .form-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
             margin-bottom: 15px;
         }
@@ -53,153 +53,23 @@
             font-family: inherit;
             font-size: 14px;
             flex: 1;
-            min-width: 150px;
+            min-width: 130px;
+        }
+        .filter-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            background: #f1f5f9;
+            padding: 12px 18px;
+            border-radius: 8px;
+        }
+        .filter-box select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
         }
         button {
             background-color: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        button:hover { background-color: #1d4ed8; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            text-align: left;
-            padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        th {
-            background-color: #f1f5f9;
-            color: #334155;
-            font-weight: bold;
-        }
-        tr:hover { background-color: #f8fafc; }
-        .badge-a { background: #dcfce7; color: #15803d; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-b { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-c { background: #fef9c3; color: #a16207; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-f { background: #fee2e2; color: #b91c1c; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-    </style>
-</head>
-<body>
-
-    <div class="header-card">
-        <h1>ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (Student Management System)</h1>
-        <p>ប្រព័ន្ធគ្រប់គ្រងពិន្ទុសិស្សប្រចាំខែ និងគណនានិទ្ទេសដោយស្វ័យប្រវត្តិ។</p>
-        
-        <div class="math-box">
-            <strong>រូបមន្តគណនាមធ្យមភាគពិន្ទុ (LaTeX Demo):</strong>
-            $$\bar{X} = \frac{\sum_{i=1}^{n} X_i}{n} = \frac{\text{Math} + \text{Exam}}{2}$$
-        </div>
-    </div>
-
-    <!-- Form បញ្ចូលទិន្នន័យសិស្ស -->
-    <div class="form-card">
-        <h3>បន្ថែមទិន្នន័យសិស្សថ្មី</h3>
-        <form id="studentForm">
-            <div class="form-group">
-                <input type="text" id="studentName" placeholder="ឈ្មោះសិស្ស" required>
-                <select id="studentGender">
-                    <option value="ប្រុស">ប្រុស</option>
-                    <option value="ស្រី">ស្រី</option>
-                </select>
-                <input type="number" id="mathScore" placeholder="ពិន្ទុគណិតវិទ្យា (0-100)" min="0" max="100" required>
-                <input type="number" id="examScore" placeholder="ពិន្ទុប្រឡង (0-100)" min="0" max="100" required>
-            </div>
-            <button type="submit">បន្ថែមសិស្ស</button>
-        </form>
-    </div>
-
-    <!-- តារាងបង្ហាញបញ្ជីសិស្ស -->
-    <div class="table-card">
-        <h3>បញ្ជីឈ្មោះ និងលទ្ធផលសិក្សា</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>ឈ្មោះសិស្ស</th>
-                    <th>ភេទ</th>
-                    <th>ពិន្ទុគណិត</th>
-                    <th>ពិន្ទុប្រឡង</th>
-                    <th>មធ្យមភាគ</th>
-                    <th>និទ្ទេស</th>
-                </tr>
-            </thead>
-            <tbody id="studentTableBody">
-                <!-- ទិន្នន័យគំរូដំបូង -->
-                <tr>
-                    <td>១</td>
-                    <td>សុខ ចាន់ធា</td>
-                    <td>ស្រី</td>
-                    <td>95</td>
-                    <td>90</td>
-                    <td>92.5</td>
-                    <td><span class="badge-a">A</span></td>
-                </tr>
-                <tr>
-                    <td>២</td>
-                    <td>កែវ វិចិត្រ</td>
-                    <td>ប្រុស</td>
-                    <td>78</td>
-                    <td>82</td>
-                    <td>80.0</td>
-                    <td><span class="badge-b">B</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <script>
-        let studentCount = 2;
-
-        document.getElementById('studentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // យកតម្លៃពី Input
-            const name = document.getElementById('studentName').value;
-            const gender = document.getElementById('studentGender').value;
-            const math = parseFloat(document.getElementById('mathScore').value);
-            const exam = parseFloat(document.getElementById('examScore').value);
-
-            // គណនាមធ្យមភាគ
-            const avg = ((math + exam) / 2).toFixed(1);
-
-            // គណនានិទ្ទេស (Grade)
-            let grade = 'F';
-            let badgeClass = 'badge-f';
-            if (avg >= 90) { grade = 'A'; badgeClass = 'badge-a'; }
-            else if (avg >= 80) { grade = 'B'; badgeClass = 'badge-b'; }
-            else if (avg >= 70) { grade = 'C'; badgeClass = 'badge-c'; }
-
-            studentCount++;
-
-            // បន្ថែម Row ថ្មីចូលក្នុង Table
-            const tbody = document.getElementById('studentTableBody');
-            const newRow = `
-                <tr>
-                    <td>${studentCount}</td>
-                    <td>${name}</td>
-                    <td>${gender}</td>
-                    <td>${math}</td>
-                    <td>${exam}</td>
-                    <td>${avg}</td>
-                    <td><span class="${badgeClass}">${grade}</span></td>
-                </tr>
-            `;
-            tbody.insertAdjacentHTML('beforeend', newRow);
-
-            // លុបទិន្នន័យក្នុង Form វិញ
-            document.getElementById('studentForm').reset();
-        });
-    </script>
-</body>
-</html>
+            color: white

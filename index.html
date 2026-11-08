@@ -3,52 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ពិន្ទុប្រឡងប្រចាំខែ តុលា ថ្នាក់ទី ១០B</title>
+    <title>Student Management System & Official Reports</title>
+    <!-- MathJax for rendering LaTeX Math -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Moul&family=Kantumruy+Pro:wght@400;500;600;700&display=swap');
 
         body {
-            font-family: 'Kantumruy Pro', 'Khmer OS Battambang', sans-serif;
-            background-color: #f3f4f6;
-            margin: 0;
+            font-family: 'Kantumruy Pro', 'Khmer OS Battambang', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            max-width: 1100px;
+            margin: 20px auto;
             padding: 20px;
-            color: #333;
+            color: #1e293b;
+            background-color: #f8fafc;
         }
 
-        .no-print {
-            text-align: center;
+        /* Nav Switcher */
+        .role-switch-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
             margin-bottom: 20px;
         }
+        .role-btn {
+            background-color: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .role-btn.active {
+            background-color: #2563eb;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);
+        }
 
-        .btn-print {
+        .header-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #2563eb;
+            margin-bottom: 25px;
+        }
+        h1 { color: #0f172a; margin-top: 0; font-size: 22px; }
+        .math-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 18px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        .form-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .form-group input, .form-group select {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            flex: 1;
+            min-width: 130px;
+        }
+        .btn-primary {
             background-color: #2563eb;
             color: white;
             border: none;
-            padding: 10px 24px;
-            font-size: 16px;
-            font-family: inherit;
-            font-weight: 600;
+            padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
         }
+        .btn-primary:hover { background-color: #1d4ed8; }
 
-        .btn-print:hover {
-            background-color: #1d4ed8;
+        /* Standard Table Styles */
+        .std-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
+        .std-table th, .std-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .std-table th { background-color: #f1f5f9; color: #334155; font-weight: bold; }
+        .std-table tr:hover { background-color: #f8fafc; }
 
-        /* ផ្ទាំងក្រដាស A4 */
+        .badge-a { background: #dcfce7; color: #15803d; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-b { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-c { background: #fef9c3; color: #a16207; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-d { background: #e2e8f0; color: #334155; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-e { background: #ffedd5; color: #c2410c; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-f { background: #fee2e2; color: #b91c1c; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+
+        /* Student Search View */
+        .student-result-card {
+            display: none;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .result-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .result-item span { display: block; font-size: 12px; color: #64748b; }
+        .result-item strong { font-size: 18px; color: #0f172a; }
+
+        /* ========================================================= */
+        /*   រចនាបថទម្រង់តារាងពិន្ទុផ្លូវការ A4 (តាមរូបភាពគំរូ)          */
+        /* ========================================================= */
+        .official-section-title {
+            margin-top: 40px;
+            border-top: 2px dashed #cbd5e1;
+            padding-top: 20px;
+            text-align: center;
+        }
+        
         .paper-page {
             background: white;
             width: 210mm;
             min-height: 297mm;
-            margin: 0 auto;
+            margin: 0 auto 40px auto;
             padding: 15mm 15mm;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             box-sizing: border-box;
+            border-radius: 4px;
         }
 
-        /* ក្បាលលិខិត Header */
         .header-top {
             text-align: center;
             color: #002060;
@@ -82,12 +198,11 @@
         .doc-title h3 {
             font-family: 'Moul', 'Khmer OS Muol Light', serif;
             color: #c00000;
-            font-size: 16px;
+            font-size: 15px;
             margin: 0;
             font-weight: normal;
         }
 
-        /* តារាង Haupt Table */
         .score-table {
             width: 100%;
             border-collapse: collapse;
@@ -99,6 +214,7 @@
             border: 1px solid #6f30a0;
             padding: 4px 2px;
             text-align: center;
+            height: 24px;
         }
 
         .score-table th {
@@ -108,13 +224,11 @@
             background-color: #ffffff;
         }
 
-        /* ពណ៌លេខរៀង និងឈ្មោះ */
         .td-id { color: #e01e5a; font-weight: bold; }
         .td-name { text-align: left !important; padding-left: 8px !important; color: #002060; font-weight: 600; }
         .td-gender { color: #002060; }
-        .td-score { color: #e01e5a; }
+        .td-score { color: #e01e5a; font-weight: bold; }
 
-        /* ពណ៌និទ្ទេស Grades */
         .grade-A { color: #e01e5a; font-weight: bold; }
         .grade-B { color: #00b050; font-weight: bold; }
         .grade-C { color: #00b050; font-weight: bold; }
@@ -122,7 +236,6 @@
         .grade-E { color: #002060; font-weight: bold; }
         .grade-F { color: #ff6600; font-weight: bold; }
 
-        /* ផ្នែកខាងក្រោម Footer & Summary Table */
         .footer-section {
             margin-top: 25px;
             display: flex;
@@ -155,46 +268,134 @@
             width: 50%;
         }
 
-        .signature-block .date-line {
-            margin-bottom: 8px;
-        }
+        .signature-block .date-line { margin-bottom: 8px; }
+        .signature-block .role-title { font-family: 'Moul', 'Khmer OS Muol Light', serif; font-size: 14px; margin-bottom: 60px; }
+        .signature-block .name-line { font-family: 'Moul', 'Khmer OS Muol Light', serif; font-size: 14px; }
 
-        .signature-block .role-title {
-            font-family: 'Moul', 'Khmer OS Muol Light', serif;
-            font-size: 14px;
-            margin-bottom: 60px;
-        }
-
-        .signature-block .name-line {
-            font-family: 'Moul', 'Khmer OS Muol Light', serif;
-            font-size: 14px;
-        }
-
-        /* Styling សម្រាប់ Print / PDF */
+        /* Media Print for Official Report */
         @media print {
-            body {
-                background: none;
-                padding: 0;
-            }
-            .no-print {
-                display: none;
-            }
+            body * { visibility: hidden; }
+            .paper-page, .paper-page * { visibility: visible; }
             .paper-page {
-                box-shadow: none;
+                position: absolute;
+                left: 0;
+                top: 0;
                 width: 100%;
-                padding: 5mm 5mm;
+                margin: 0;
+                box-shadow: none;
+                padding: 5mm;
             }
-            @page {
-                size: A4 portrait;
-                margin: 10mm;
-            }
+            @page { size: A4 portrait; margin: 10mm; }
         }
     </style>
 </head>
 <body>
 
-    <div class="no-print">
-        <button class="btn-print" onclick="window.print()">🖨️ បោះពុម្ព ឬទាញយកជា PDF</button>
+    <!-- របារជ្រើសរើសតួនាទី (Role Switcher) -->
+    <div class="role-switch-container">
+        <button class="role-btn active" id="btnTeacher" onclick="switchRole('teacher')">👨‍🏫 ទម្រង់សម្រាប់គ្រូបង្រៀន (Input & Manage)</button>
+        <button class="role-btn" id="btnStudent" onclick="switchRole('student')">👨‍🎓 ទម្រង់សម្រាប់សិស្ស (Student View)</button>
+    </div>
+
+    <!-- Header Card -->
+    <div class="header-card">
+        <h1 id="headerTitle">ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (សម្រាប់គ្រូបង្រៀន)</h1>
+        <p id="headerDesc">គ្រប់គ្រង បញ្ចូលពិន្ទុសិស្សតាមថ្នាក់ និងគណនាមធ្យមភាគដោយស្វ័យប្រវត្តិ។</p>
+        
+        <div class="math-box">
+            <strong>រូបមន្តគណនាមធ្យមភាគពិន្ទុ (LaTeX Demo):</strong>
+            $$\bar{X} = \frac{\sum_{i=1}^{n} X_i}{n} = \frac{\text{Math} + \text{Exam}}{2}$$
+        </div>
+    </div>
+
+    <!-- ==================== ១. DASHBOARD សម្រាប់គ្រូបង្រៀន ==================== -->
+    <div id="teacherDashboard">
+        <div class="card">
+            <h3>បន្ថែមទិន្នន័យសិស្ស និងពិន្ទុថ្មី</h3>
+            <form id="studentForm">
+                <div class="form-group">
+                    <input type="text" id="studentName" placeholder="ឈ្មោះសិស្ស" required>
+                    <select id="studentGender">
+                        <option value="ប្រុស">ប្រុស</option>
+                        <option value="ស្រី">ស្រី</option>
+                    </select>
+                    <select id="studentClass" required>
+                        <option value="" disabled selected>-- ជ្រើសរើសថ្នាក់ --</option>
+                        <optgroup label="ថ្នាក់ទី ១០"><option value="10A">10A</option><option value="10B" selected>10B</option><option value="10C">10C</option><option value="10D">10D</option><option value="10E">10E</option></optgroup>
+                        <optgroup label="ថ្នាក់ទី ១១"><option value="11A">11A</option><option value="11B">11B</option><option value="11C">11C</option><option value="11D">11D</option><option value="11E">11E</option></optgroup>
+                        <optgroup label="ថ្នាក់ទី ១២"><option value="12A">12A</option><option value="12B">12B</option><option value="12C">12C</option><option value="12D">12D</option><option value="12E">12E</option></optgroup>
+                    </select>
+                    <input type="number" id="mathScore" placeholder="ពិន្ទុគណិតវិទ្យា (0-100)" min="0" max="100" required>
+                    <input type="number" id="examScore" placeholder="ពិន្ទុប្រឡង (0-100)" min="0" max="100" required>
+                </div>
+                <button type="submit" class="btn-primary">បន្ថែមសិស្ស</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== ២. DASHBOARD សម្រាប់សិស្ស ==================== -->
+    <div id="studentDashboard" style="display: none;">
+        <div class="card">
+            <h3>🔍 ស្វែងរកពិន្ទុ និងលទ្ធផលសិក្សាផ្ទាល់ខ្លួន</h3>
+            <div class="form-group">
+                <input type="text" id="searchStudentName" placeholder="វាយបញ្ចូលឈ្មោះសិស្ស...">
+                <button type="button" class="btn-primary" onclick="searchStudentResult()">ស្វែងរកពិន្ទុ</button>
+            </div>
+
+            <div id="studentResultDisplay" class="student-result-card">
+                <h4 id="resName" style="margin:0; color:#15803d; font-size:18px;"></h4>
+                <div class="result-grid">
+                    <div class="result-item"><span>ថ្នាក់រៀន</span><strong id="resClass">-</strong></div>
+                    <div class="result-item"><span>ពិន្ទុគណិត</span><strong id="resMath">-</strong></div>
+                    <div class="result-item"><span>ពិន្ទុប្រឡង</span><strong id="resExam">-</strong></div>
+                    <div class="result-item"><span>មធ្យមភាគ</span><strong id="resAvg">-</strong></div>
+                    <div class="result-item"><span>និទ្ទេស</span><strong id="resGrade">-</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ៣. តារាងបញ្ជីឈ្មោះសរុប ==================== -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+            <h3 style="margin:0;">បញ្ជីឈ្មោះ និងលទ្ធផលសិក្សាសរុប (System List)</h3>
+            <div>
+                <strong>តម្រងថ្នាក់៖ </strong>
+                <select id="filterClass" onchange="filterStudents()" style="padding: 6px 12px; border-radius: 6px; border:1px solid #cbd5e1;">
+                    <option value="ALL">បង្ហាញទាំងអស់</option>
+                    <optgroup label="ថ្នាក់ទី ១០"><option value="10A">10A</option><option value="10B">10B</option><option value="10C">10C</option><option value="10D">10D</option><option value="10E">10E</option></optgroup>
+                    <optgroup label="ថ្នាក់ទី ១១"><option value="11A">11A</option><option value="11B">11B</option><option value="11C">11C</option><option value="11D">11D</option><option value="11E">11E</option></optgroup>
+                    <optgroup label="ថ្នាក់ទី ១២"><option value="12A">12A</option><option value="12B">12B</option><option value="12C">12C</option><option value="12D">12D</option><option value="12E">12E</option></optgroup>
+                </select>
+            </div>
+        </div>
+
+        <table class="std-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ឈ្មោះសិស្ស</th>
+                    <th>ភេទ</th>
+                    <th>ថ្នាក់</th>
+                    <th>ពិន្ទុគណិត</th>
+                    <th>ពិន្ទុប្រឡង</th>
+                    <th>មធ្យមភាគ/សរុប</th>
+                    <th>និទ្ទេស</th>
+                </tr>
+            </thead>
+            <tbody id="studentTableBody">
+                <!-- ទិន្នន័យជាក់ស្តែងនឹងត្រូវ Render ដោយ JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- ============= ៤. តារាងលទ្ធផលផ្លូវការ A4 (Auto-Updated) ============= -->
+    <!-- ================================================================= -->
+    <div class="official-section-title">
+        <h2>📄 តារាងលទ្ធផលប្រឡងផ្លូវការ (ទម្រង់បោះពុម្ព ឬ Export ជា PDF)</h2>
+        <p>តារាងនេះនឹងធ្វើបច្ចុប្បន្នភាពឈ្មោះ និងពិន្ទុដោយស្វ័យប្រវត្តិ តាមពិន្ទុដែលគ្រូបានបញ្ចូលខាងលើ[cite: 7, 8]!</p>
+        <button class="btn-primary" style="background-color: #059669; margin-bottom: 20px;" onclick="window.print()">🖨️ បោះពុម្ព ឬទាញយកទម្រង់ A4 នេះជា PDF</button>
     </div>
 
     <div class="paper-page">
@@ -204,16 +405,16 @@
             ជាតិ សាសនា ព្រះមហាក្សត្រ
         </div>
         <div class="school-name">
-            វិទ្យាល័យ ហ៊ុនសែន តាកែវ
+            វិទ្យាល័យហ៊ុនសែនតាកែវ
         </div>
 
         <!-- ចំណងជើង -->
         <div class="doc-title">
-            <h2>ពិន្ទុប្រឡងប្រចាំខែ តុលា ថ្នាក់ទី ១០B</h2>
+            <h2 id="officialDocClass">ពិន្ទុប្រឡងប្រចាំខែ តុលា ថ្នាក់ទី ១០B</h2>
             <h3>មុខវិជ្ជា៖ គណិតវិទ្យា ឆ្នាំសិក្សា ២០២៦-២០២៧</h3>
         </div>
 
-        <!-- តារាងពិន្ទុ (ពីរជួរ split) -->
+        <!-- តារាងពិន្ទុ ពីរជួរ split[cite: 8] -->
         <table class="score-table">
             <thead>
                 <tr>
@@ -234,123 +435,25 @@
                     <th style="width: 6%;">ផ្សេងៗ</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- ជួរទី ១ ដល់ ២៨ (ផ្គូផ្គង ១-២០ និង ២១-២៨) -->
-                <tr>
-                    <td class="td-id">1</td><td class="td-name">កឹម សុខាលាប</td><td class="td-gender">ប្រុស</td><td class="td-score">53</td><td class="grade-F">F</td><td>23</td><td></td>
-                    <td class="td-id">21</td><td class="td-name">វណ្ណា ប៊ុនហេង</td><td class="td-gender">ប្រុស</td><td class="td-score">48</td><td class="grade-F">F</td><td>26</td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">2</td><td class="td-name">កែវ សុជាតា</td><td class="td-gender">ប្រុស</td><td class="td-score">99</td><td class="grade-C">C</td><td>3</td><td></td>
-                    <td class="td-id">22</td><td class="td-name">លឿន ច័ន្ទធានី</td><td class="td-gender">ស្រី</td><td class="td-score">93</td><td class="grade-C">C</td><td>5</td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">3</td><td class="td-name">ខន ម៉ូហ្សារ៉ា</td><td class="td-gender">ប្រុស</td><td class="td-score">52</td><td class="grade-F">F</td><td>24</td><td></td>
-                    <td class="td-id">23</td><td class="td-name">លាម ហួយសៀវ</td><td class="td-gender">ស្រី</td><td class="td-score">76</td><td class="grade-D">D</td><td>8</td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">4</td><td class="td-name">គ្រឹស្នា សិទ្ធិណាលីន</td><td class="td-gender">ស្រី</td><td class="td-score">58</td><td class="grade-F">F</td><td>19</td><td></td>
-                    <td class="td-id">24</td><td class="td-name">សំ ម៉ីនីសា</td><td class="td-gender">ស្រី</td><td class="td-score">96</td><td class="grade-C">C</td><td>4</td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">5</td><td class="td-name">ឃឿន ស្រីយ៉ារ៉ា</td><td class="td-gender">ស្រី</td><td class="td-score">59</td><td class="grade-F">F</td><td>18</td><td></td>
-                    <td class="td-id">25</td><td class="td-name">ហួត លីម៉េង</td><td class="td-gender">ស្រី</td><td class="td-score">55</td><td class="grade-F">F</td><td>20</td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">6</td><td class="td-name">ជ័យ ចរិយា</td><td class="td-gender">ស្រី</td><td class="td-score">63</td><td class="grade-E">E</td><td>15</td><td></td>
-                    <td class="td-id">26</td><td class="td-name">ហេង ម៉េងគង់</td><td class="td-gender">ប្រុស</td><td class="td-score">107</td><td class="grade-B">B</td><td>2</td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">7</td><td class="td-name">ឈាង ស៊ុននីន</td><td class="td-gender">ស្រី</td><td class="td-score">85</td><td class="grade-D">D</td><td>6</td><td></td>
-                    <td class="td-id">27</td><td class="td-name">ឯម ច័ន្ទសីម៉ា</td><td class="td-gender">ស្រី</td><td class="td-score">74</td><td class="grade-E">E</td><td>9</td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">8</td><td class="td-name">ឈឿន អាលីសា</td><td class="td-gender">ស្រី</td><td class="td-score">64</td><td class="grade-E">E</td><td>12</td><td></td>
-                    <td class="td-id">28</td><td class="td-name">ឡុយ ស្រីមាស</td><td class="td-gender">ស្រី</td><td class="td-score">32</td><td class="grade-F">F</td><td>28</td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">9</td><td class="td-name">ណារ៉ា ច័ន្ទធីតា</td><td class="td-gender">ស្រី</td><td class="td-score">64</td><td class="grade-E">E</td><td>14</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">10</td><td class="td-name">ឌី ម៉េងស្រៀង</td><td class="td-gender">ប្រុស</td><td class="td-score">71</td><td class="grade-E">E</td><td>10</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">11</td><td class="td-name">ទូច ចាន់ធី</td><td class="td-gender">ប្រុស</td><td class="td-score">59</td><td class="grade-F">F</td><td>17</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">12</td><td class="td-name">ទ្រី សូលីការ</td><td class="td-gender">ស្រី</td><td class="td-score">47</td><td class="grade-F">F</td><td>27</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">13</td><td class="td-name">ផល ច័ន្ទសិទ្ធិកា</td><td class="td-gender">ស្រី</td><td class="td-score">107</td><td class="grade-B">B</td><td>1</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">14</td><td class="td-name">យ៉ាង ម៉ូហ្សារ៉ា</td><td class="td-gender">ប្រុស</td><td class="td-score">55</td><td class="grade-F">F</td><td>21</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">15</td><td class="td-name">យឹម ជីវ៉ារ៉ល</td><td class="td-gender">ប្រុស</td><td class="td-score">84</td><td class="grade-D">D</td><td>7</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">16</td><td class="td-name">យឿន សិលា</td><td class="td-gender">ប្រុស</td><td class="td-score">63</td><td class="grade-E">E</td><td>16</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">17</td><td class="td-name">រស រតនាវុឌ្ឍ</td><td class="td-gender">ប្រុស</td><td class="td-score">69</td><td class="grade-E">E</td><td>11</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">18</td><td class="td-name">រ៉ា ស៊ូរ៉ូដង់</td><td class="td-gender">ប្រុស</td><td class="td-score">51</td><td class="grade-F">F</td><td>25</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">19</td><td class="td-name">លាង ប៊ុនឡុង</td><td class="td-gender">ប្រុស</td><td class="td-score">64</td><td class="grade-E">E</td><td>13</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="td-id">20</td><td class="td-name">លីម ជើងសាន</td><td class="td-gender">ប្រុស</td><td class="td-score">54</td><td class="grade-F">F</td><td>22</td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
+            <tbody id="officialTableBody">
+                <!-- JavaScript នឹងបំពេញឈ្មោះ និងពិន្ទុជាក់ស្តែងនៅទីនេះ[cite: 8] -->
             </tbody>
         </table>
 
-        <!-- ផ្នែកខាងក្រោម (តារាងសង្ខេប និងកន្លែងស៊ីញ៉ូ) -->
+        <!-- ផ្នែកខាងក្រោម (តារាងសង្ខេប និងកន្លែងស៊ីញ៉ូ)[cite: 8] -->
         <div class="footer-section">
             <table class="summary-table">
                 <tr>
-                    <td class="sum-grade grade-A">A</td>
-                    <td class="sum-unit">ចំនួន</td>
-                    <td class="sum-val">0</td>
-                    <td class="sum-unit">នាក់</td>
-                    <td class="sum-grade grade-D">D</td>
-                    <td class="sum-unit">ចំនួន</td>
-                    <td class="sum-val">3</td>
-                    <td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-A">A</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumA">0</td><td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-D">D</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumD">0</td><td class="sum-unit">នាក់</td>
                 </tr>
                 <tr>
-                    <td class="sum-grade grade-B">B</td>
-                    <td class="sum-unit">ចំនួន</td>
-                    <td class="sum-val">2</td>
-                    <td class="sum-unit">នាក់</td>
-                    <td class="sum-grade grade-E">E</td>
-                    <td class="sum-unit">ចំនួន</td>
-                    <td class="sum-val">8</td>
-                    <td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-B">B</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumB">0</td><td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-E">E</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumE">0</td><td class="sum-unit">នាក់</td>
                 </tr>
                 <tr>
-                    <td class="sum-grade grade-C">C</td>
-                    <td class="sum-unit">ចំនួន</td>
-                    <td class="sum-val">3</td>
-                    <td class="sum-unit">នាក់</td>
-                    <td class="sum-grade grade-F">F</td>
-                    <td class="sum-unit">ចំនួន</td>
-                    <td class="sum-val">12</td>
-                    <td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-C">C</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumC">0</td><td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-F">F</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumF">0</td><td class="sum-unit">នាក់</td>
                 </tr>
             </table>
 
@@ -362,5 +465,220 @@
         </div>
     </div>
 
+    <!-- JavaScript Handling & Auto Syncing -->
+    <script>
+        // Array រក្សាទុកទិន្នន័យសិស្សជាក់ស្តែង (ទិន្នន័យដើម)[cite: 8]
+        let studentsData = [
+            { id: 1, name: 'កឹម សុខាលាប', gender: 'ប្រុស', sClass: '10B', math: 53, exam: 53, total: 53, grade: 'F', rank: 0 },
+            { id: 2, name: 'កែវ សុជាតា', gender: 'ប្រុស', sClass: '10B', math: 99, exam: 99, total: 99, grade: 'C', rank: 0 },
+            { id: 3, name: 'ខន ម៉ូហ្សារ៉ា', gender: 'ប្រុស', sClass: '10B', math: 52, exam: 52, total: 52, grade: 'F', rank: 0 },
+            { id: 4, name: 'គ្រឹស្នា សិទ្ធិណាលីន', gender: 'ស្រី', sClass: '10B', math: 58, exam: 58, total: 58, grade: 'F', rank: 0 },
+            { id: 5, name: 'ឃឿន ស្រីយ៉ារ៉ា', gender: 'ស្រី', sClass: '10B', math: 59, exam: 59, total: 59, grade: 'F', rank: 0 },
+            { id: 6, name: 'ជ័យ ចរិយា', gender: 'ស្រី', sClass: '10B', math: 63, exam: 63, total: 63, grade: 'E', rank: 0 },
+            { id: 7, name: 'ឈាង ស៊ុននីន', gender: 'ស្រី', sClass: '10B', math: 85, exam: 85, total: 85, grade: 'D', rank: 0 },
+            { id: 8, name: 'ឈឿន អាលីសា', gender: 'ស្រី', sClass: '10B', math: 64, exam: 64, total: 64, grade: 'E', rank: 0 },
+            { id: 9, name: 'ណារ៉ា ច័ន្ទធីតា', gender: 'ស្រី', sClass: '10B', math: 64, exam: 64, total: 64, grade: 'E', rank: 0 },
+            { id: 10, name: 'ឌី ម៉េងស្រៀង', gender: 'ប្រុស', sClass: '10B', math: 71, exam: 71, total: 71, grade: 'E', rank: 0 },
+            { id: 11, name: 'ទូច ចាន់ធី', gender: 'ប្រុស', sClass: '10B', math: 59, exam: 59, total: 59, grade: 'F', rank: 0 },
+            { id: 12, name: 'ទ្រី សូលីការ', gender: 'ស្រី', sClass: '10B', math: 47, exam: 47, total: 47, grade: 'F', rank: 0 },
+            { id: 13, name: 'ផល ច័ន្ទសិទ្ធិកា', gender: 'ស្រី', sClass: '10B', math: 107, exam: 107, total: 107, grade: 'B', rank: 0 },
+            { id: 14, name: 'យ៉ាង ម៉ូហ្សារ៉ា', gender: 'ប្រុស', sClass: '10B', math: 55, exam: 55, total: 55, grade: 'F', rank: 0 },
+            { id: 15, name: 'យឹម ជីវ៉ារ៉ល', gender: 'ប្រុស', sClass: '10B', math: 84, exam: 84, total: 84, grade: 'D', rank: 0 },
+            { id: 16, name: 'យឿន សិលា', gender: 'ប្រុស', sClass: '10B', math: 63, exam: 63, total: 63, grade: 'E', rank: 0 },
+            { id: 17, name: 'រស រតនាវុឌ្ឍ', gender: 'ប្រុស', sClass: '10B', math: 69, exam: 69, total: 69, grade: 'E', rank: 0 },
+            { id: 18, name: 'រ៉ា ស៊ូរ៉ូដង់', gender: 'ប្រុស', sClass: '10B', math: 51, exam: 51, total: 51, grade: 'F', rank: 0 },
+            { id: 19, name: 'លាង ប៊ុនឡុង', gender: 'ប្រុស', sClass: '10B', math: 64, exam: 64, total: 64, grade: 'E', rank: 0 },
+            { id: 20, name: 'លីម ជើងសាន', gender: 'ប្រុស', sClass: '10B', math: 54, exam: 54, total: 54, grade: 'F', rank: 0 },
+            { id: 21, name: 'វណ្ណា ប៊ុនហេង', gender: 'ប្រុស', sClass: '10B', math: 48, exam: 48, total: 48, grade: 'F', rank: 0 },
+            { id: 22, name: 'លឿន ច័ន្ទធានី', gender: 'ស្រី', sClass: '10B', math: 93, exam: 93, total: 93, grade: 'C', rank: 0 },
+            { id: 23, name: 'លាម ហួយសៀវ', gender: 'ស្រី', sClass: '10B', math: 76, exam: 76, total: 76, grade: 'D', rank: 0 },
+            { id: 24, name: 'សំ ម៉ីនីសា', gender: 'ស្រី', sClass: '10B', math: 96, exam: 96, total: 96, grade: 'C', rank: 0 },
+            { id: 25, name: 'ហួត លីម៉េង', gender: 'ស្រី', sClass: '10B', math: 55, exam: 55, total: 55, grade: 'F', rank: 0 },
+            { id: 26, name: 'ហេង ម៉េងគង់', gender: 'ប្រុស', sClass: '10B', math: 107, exam: 107, total: 107, grade: 'B', rank: 0 },
+            { id: 27, name: 'ឯម ច័ន្ទសីម៉ា', gender: 'ស្រី', sClass: '10B', math: 74, exam: 74, total: 74, grade: 'E', rank: 0 },
+            { id: 28, name: 'ឡុយ ស្រីមាស', gender: 'ស្រី', sClass: '10B', math: 32, exam: 32, total: 32, grade: 'F', rank: 0 }
+        ];
+
+        // គណនា ចំណាត់ថ្នាក់ (Rank) និង Render តារាងទាំងអស់
+        function updateSystemTables() {
+            // ១. គណនា Rank តាមទិន្នន័យសរុប (Total) ពីធំទៅតូច
+            let sorted = [...studentsData].sort((a, b) => b.total - a.total);
+            sorted.forEach((item, index) => {
+                let found = studentsData.find(s => s.id === item.id);
+                if (found) found.rank = index + 1;
+            });
+
+            // ២. Render Standard System Table
+            const stdBody = document.getElementById('studentTableBody');
+            stdBody.innerHTML = '';
+            studentsData.forEach(s => {
+                let badgeClass = 'badge-' + s.grade.toLowerCase();
+                stdBody.innerHTML += `
+                    <tr data-class="${s.sClass}">
+                        <td>${s.id}</td>
+                        <td class="st-name">${s.name}</td>
+                        <td>${s.gender}</td>
+                        <td class="st-class">${s.sClass}</td>
+                        <td class="st-math">${s.math}</td>
+                        <td class="st-exam">${s.exam}</td>
+                        <td class="st-avg">${s.total}</td>
+                        <td><span class="${badgeClass} st-grade">${s.grade}</span></td>
+                    </tr>
+                `;
+            });
+
+            // ៣. Render Official A4 Table (Split 2 Columns)[cite: 8]
+            const offBody = document.getElementById('officialTableBody');
+            offBody.innerHTML = '';
+            
+            // កាត់យក ២០ នាក់ដំបូងសម្រាប់ជួរឆ្វេង និង ២១-៤០ សម្រាប់ជួរស្តាំ
+            let leftCol = studentsData.slice(0, 20);
+            let rightCol = studentsData.slice(20, 40);
+            let maxRows = Math.max(leftCol.length, 20);
+
+            let gradeCounts = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
+
+            for (let i = 0; i < maxRows; i++) {
+                let left = leftCol[i] || null;
+                let right = rightCol[i] || null;
+
+                if (left) gradeCounts[left.grade]++;
+                if (right) gradeCounts[right.grade]++;
+
+                let leftHTML = left ? `
+                    <td class="td-id">${left.id}</td>
+                    <td class="td-name">${left.name}</td>
+                    <td class="td-gender">${left.gender}</td>
+                    <td class="td-score">${left.total}</td>
+                    <td class="grade-${left.grade}">${left.grade}</td>
+                    <td>${left.rank}</td>
+                    <td></td>
+                ` : `<td></td><td></td><td></td><td></td><td></td><td></td><td></td>`;
+
+                let rightHTML = right ? `
+                    <td class="td-id">${right.id}</td>
+                    <td class="td-name">${right.name}</td>
+                    <td class="td-gender">${right.gender}</td>
+                    <td class="td-score">${right.total}</td>
+                    <td class="grade-${right.grade}">${right.grade}</td>
+                    <td>${right.rank}</td>
+                    <td></td>
+                ` : `<td></td><td></td><td></td><td></td><td></td><td></td><td></td>`;
+
+                offBody.innerHTML += `<tr>${leftHTML}${rightHTML}</tr>`;
+            }
+
+            // ៤. ធ្វើបច្ចុប្បន្នភាពតារាងសង្ខេបនិទ្ទេស (Summary Table)[cite: 8]
+            document.getElementById('sumA').innerText = gradeCounts.A;
+            document.getElementById('sumB').innerText = gradeCounts.B;
+            document.getElementById('sumC').innerText = gradeCounts.C;
+            document.getElementById('sumD').innerText = gradeCounts.D;
+            document.getElementById('sumE').innerText = gradeCounts.E;
+            document.getElementById('sumF').innerText = gradeCounts.F;
+
+            filterStudents();
+        }
+
+        // មុខងារបន្ថែមសិស្សថ្មីពី Form (នឹង Sync ទៅតារាង A4 ភ្លាមៗ)
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('studentName').value;
+            const gender = document.getElementById('studentGender').value;
+            const sClass = document.getElementById('studentClass').value;
+            const math = parseFloat(document.getElementById('mathScore').value);
+            const exam = parseFloat(document.getElementById('examScore').value);
+            const total = math; // យកតាមពិន្ទុមុខវិជ្ជាសរុប
+
+            let grade = 'F';
+            if (total >= 115) grade = 'A';
+            else if (total >= 100) grade = 'B';
+            else if (total >= 90) grade = 'C';
+            else if (total >= 75) grade = 'D';
+            else if (total >= 60) grade = 'E';
+
+            const newStudent = {
+                id: studentsData.length + 1,
+                name: name,
+                gender: gender,
+                sClass: sClass,
+                math: math,
+                exam: exam,
+                total: total,
+                grade: grade,
+                rank: 0
+            };
+
+            studentsData.push(newStudent);
+            updateSystemTables(); // រៀបចំ និង Update គ្រប់តារាងឡើងវិញ
+            document.getElementById('studentForm').reset();
+        });
+
+        // Switch Role
+        function switchRole(role) {
+            const teacherDash = document.getElementById('teacherDashboard');
+            const studentDash = document.getElementById('studentDashboard');
+            const btnTeacher = document.getElementById('btnTeacher');
+            const btnStudent = document.getElementById('btnStudent');
+            const headerTitle = document.getElementById('headerTitle');
+
+            if (role === 'teacher') {
+                teacherDash.style.display = 'block';
+                studentDash.style.display = 'none';
+                btnTeacher.classList.add('active');
+                btnStudent.classList.remove('active');
+                headerTitle.innerText = "ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (សម្រាប់គ្រូបង្រៀន)";
+            } else {
+                teacherDash.style.display = 'none';
+                studentDash.style.display = 'block';
+                btnStudent.classList.add('active');
+                btnTeacher.classList.remove('active');
+                headerTitle.innerText = "ប្រព័ន្ធពិនិត្យមើលពិន្ទុសិក្សា (សម្រាប់សិស្សានុសិស្ស)";
+            }
+        }
+
+        // Filter តាមថ្នាក់
+        function filterStudents() {
+            const selectedClass = document.getElementById('filterClass').value;
+            const rows = document.querySelectorAll('#studentTableBody tr');
+
+            rows.forEach(row => {
+                const rowClass = row.getAttribute('data-class');
+                if (selectedClass === 'ALL' || rowClass === selectedClass) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // ស្វែងរកតាមសិស្ស
+        function searchStudentResult() {
+            const query = document.getElementById('searchStudentName').value.trim().toLowerCase();
+            const displayBox = document.getElementById('studentResultDisplay');
+            let found = studentsData.find(s => s.name.toLowerCase().includes(query));
+
+            if (!query) {
+                alert("សូមវាយបញ្ចូលឈ្មោះសិស្សដើម្បីស្វែងរក!");
+                return;
+            }
+
+            if (found) {
+                document.getElementById('resName').innerText = "លទ្ធផលសិក្សារបស់៖ " + found.name;
+                document.getElementById('resClass').innerText = found.sClass;
+                document.getElementById('resMath').innerText = found.math;
+                document.getElementById('resExam').innerText = found.exam;
+                document.getElementById('resAvg').innerText = found.total;
+                document.getElementById('resGrade').innerText = found.grade;
+                displayBox.style.display = 'block';
+            } else {
+                alert("រកមិនឃើញឈ្មោះសិស្សនេះក្នុងប្រព័ន្ធទេ!");
+                displayBox.style.display = 'none';
+            }
+        }
+
+        // ដំណើរការដំបូង
+        updateSystemTables();
+    </script>
 </body>
 </html>

@@ -4,140 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Management System</title>
+    
+    <!-- ភ្ជាប់ទៅកាន់ឯកសារ CSS ខាងក្រៅ -->
+    <link rel="stylesheet" href="style.css">
+
     <!-- MathJax for rendering LaTeX Math -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <style>
-        body {
-            font-family: 'Khmer OS Battambang', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            max-width: 1100px;
-            margin: 20px auto;
-            padding: 20px;
-            color: #1e293b;
-            background-color: #f8fafc;
-        }
-        
-        /* Navigation Role Switcher */
-        .role-switch-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .role-btn {
-            background-color: #e2e8f0;
-            color: #475569;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .role-btn.active {
-            background-color: #2563eb;
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);
-        }
-
-        .header-card {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border-top: 5px solid #2563eb;
-            margin-bottom: 25px;
-        }
-        h1 { color: #0f172a; margin-top: 0; font-size: 24px; }
-        .math-box {
-            background-color: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 12px 18px;
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-
-        .card {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-        }
-        .form-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        .form-group input, .form-group select {
-            padding: 10px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 14px;
-            flex: 1;
-            min-width: 130px;
-        }
-        .btn-primary {
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .btn-primary:hover { background-color: #1d4ed8; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            text-align: left;
-            padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        th { background-color: #f1f5f9; color: #334155; font-weight: bold; }
-        tr:hover { background-color: #f8fafc; }
-
-        .badge-a { background: #dcfce7; color: #15803d; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-b { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-c { background: #fef9c3; color: #a16207; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-f { background: #fee2e2; color: #b91c1c; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-
-        /* Student View Specific Styles */
-        .student-result-card {
-            display: none;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        .result-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .result-item {
-            background: white;
-            padding: 12px;
-            border-radius: 6px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .result-item span { display: block; font-size: 12px; color: #64748b; }
-        .result-item strong { font-size: 18px; color: #0f172a; }
-    </style>
 </head>
 <body>
 
@@ -224,7 +97,6 @@
                 </tr>
             </thead>
             <tbody id="studentTableBody">
-                <!-- ទិន្នន័យដើម[cite: 7] -->
                 <tr>
                     <td>១</td>
                     <td class="st-name">សុខ ចាន់ធា</td>
@@ -259,104 +131,7 @@
         </table>
     </div>
 
-    <script>
-        let studentCount = 3;
-
-        // មុខងារផ្លាស់ប្តូរ Role (Teacher vs Student)
-        function switchRole(role) {
-            const teacherDash = document.getElementById('teacherDashboard');
-            const studentDash = document.getElementById('studentDashboard');
-            const btnTeacher = document.getElementById('btnTeacher');
-            const btnStudent = document.getElementById('btnStudent');
-            const headerTitle = document.getElementById('headerTitle');
-            const headerDesc = document.getElementById('headerDesc');
-
-            if (role === 'teacher') {
-                teacherDash.style.display = 'block';
-                studentDash.style.display = 'none';
-                btnTeacher.classList.add('active');
-                btnStudent.classList.remove('active');
-                headerTitle.innerText = "ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (សម្រាប់គ្រូបង្រៀន)";
-                headerDesc.innerText = "គ្រប់គ្រង បញ្ចូលពិន្ទុសិស្ស និងគណនាមធ្យមភាគដោយស្វ័យប្រវត្តិ។";
-            } else {
-                teacherDash.style.display = 'none';
-                studentDash.style.display = 'block';
-                btnStudent.classList.add('active');
-                btnTeacher.classList.remove('active');
-                headerTitle.innerText = "ប្រព័ន្ធពិនិត្យមើលពិន្ទុសិក្សា (សម្រាប់សិស្សានុសិស្ស)";
-                headerDesc.innerText = "ស្វែងរក និងពិនិត្យមើលលទ្ធផលប្រឡងប្រចាំខែរបស់អ្នក។";
-            }
-        }
-
-        // មុខងារបន្ថែមសិស្ស (សម្រាប់គ្រូ)
-        document.getElementById('studentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const name = document.getElementById('studentName').value;
-            const gender = document.getElementById('studentGender').value;
-            const sClass = document.getElementById('studentClass').value;
-            const math = parseFloat(document.getElementById('mathScore').value);
-            const exam = parseFloat(document.getElementById('examScore').value);
-
-            const avg = ((math + exam) / 2).toFixed(1);
-
-            let grade = 'F';
-            let badgeClass = 'badge-f';
-            if (avg >= 90) { grade = 'A'; badgeClass = 'badge-a'; }
-            else if (avg >= 80) { grade = 'B'; badgeClass = 'badge-b'; }
-            else if (avg >= 70) { grade = 'C'; badgeClass = 'badge-c'; }
-
-            studentCount++;
-
-            const tbody = document.getElementById('studentTableBody');
-            const newRow = `
-                <tr>
-                    <td>${studentCount}</td>
-                    <td class="st-name">${name}</td>
-                    <td>${gender}</td>
-                    <td class="st-class">${sClass}</td>
-                    <td class="st-math">${math}</td>
-                    <td class="st-exam">${exam}</td>
-                    <td class="st-avg">${avg}</td>
-                    <td><span class="${badgeClass} st-grade">${grade}</span></td>
-                </tr>
-            `;
-            tbody.insertAdjacentHTML('beforeend', newRow);
-            document.getElementById('studentForm').reset();
-        });
-
-        // មុខងារស្វែងរកពិន្ទុ (សម្រាប់សិស្ស)
-        function searchStudentResult() {
-            const query = document.getElementById('searchStudentName').value.trim().toLowerCase();
-            const rows = document.querySelectorAll('#studentTableBody tr');
-            const displayBox = document.getElementById('studentResultDisplay');
-            let found = false;
-
-            if (query === "") {
-                alert("សូមវាយបញ្ចូលឈ្មោះសិស្សដើម្បីស្វែងរក!");
-                return;
-            }
-
-            rows.forEach(row => {
-                const name = row.querySelector('.st-name').innerText;
-                if (name.toLowerCase().includes(query)) {
-                    document.getElementById('resName').innerText = "លទ្ធផលសិក្សារបស់៖ " + name;
-                    document.getElementById('resClass').innerText = row.querySelector('.st-class').innerText;
-                    document.getElementById('resMath').innerText = row.querySelector('.st-math').innerText;
-                    document.getElementById('resExam').innerText = row.querySelector('.st-exam').innerText;
-                    document.getElementById('resAvg').innerText = row.querySelector('.st-avg').innerText;
-                    document.getElementById('resGrade').innerText = row.querySelector('.st-grade').innerText;
-                    
-                    displayBox.style.display = 'block';
-                    found = true;
-                }
-            });
-
-            if (!found) {
-                alert("រកមិនឃើញឈ្មោះសិស្សនេះក្នុងប្រព័ន្ធទេ!");
-                displayBox.style.display = 'none';
-            }
-        }
-    </script>
+    <!-- ភ្ជាប់ទៅកាន់ឯកសារ JavaScript ខាងក្រៅ -->
+    <script src="script.js"></script>
 </body>
 </html>

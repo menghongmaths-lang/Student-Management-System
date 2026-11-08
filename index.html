@@ -45,7 +45,7 @@
                     </select>
                     <select id="studentClass" required>
                         <option value="" disabled selected>-- ជ្រើសរើសថ្នាក់ --</option>
-                        <optgroup label="ថ្នាក់ទី ១០"><option value="10A">10A</option><option value="10B">10B</option><option value="10C">10C</option><option value="10D">10D</option><option value="10E">10E</option></optgroup>
+                        <optgroup label="ថ្នាក់ទី ១០"><option value="10A">10A</option><option value="10B" selected>10B</option><option value="10C">10C</option><option value="10D">10D</option><option value="10E">10E</option></optgroup>
                         <optgroup label="ថ្នាក់ទី ១១"><option value="11A">11A</option><option value="11B">11B</option><option value="11C">11C</option><option value="11D">11D</option><option value="11E">11E</option></optgroup>
                         <optgroup label="ថ្នាក់ទី ១២"><option value="12A">12A</option><option value="12B">12B</option><option value="12C">12C</option><option value="12D">12D</option><option value="12E">12E</option></optgroup>
                     </select>
@@ -80,10 +80,23 @@
         </div>
     </div>
 
-    <!-- តារាងបង្ហាញទិន្នន័យ (រួមគ្នា) -->
+    <!-- ==================== ៣. តារាងបង្ហាញទិន្នន័យសរុប ==================== -->
     <div class="card">
-        <h3>បញ្ជីឈ្មោះ និងលទ្ធផលសិក្សាសរុប</h3>
-        <table>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+            <h3 style="margin:0;">បញ្ជីឈ្មោះ និងលទ្ធផលសិក្សាសរុប</h3>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <strong>តម្រងថ្នាក់៖ </strong>
+                <select id="filterClass" onchange="filterStudents()" style="padding: 6px 12px; border-radius: 6px; border:1px solid #cbd5e1;">
+                    <option value="ALL">បង្ហាញទាំងអស់</option>
+                    <optgroup label="ថ្នាក់ទី ១០"><option value="10A">10A</option><option value="10B">10B</option><option value="10C">10C</option><option value="10D">10D</option><option value="10E">10E</option></optgroup>
+                    <optgroup label="ថ្នាក់ទី ១១"><option value="11A">11A</option><option value="11B">11B</option><option value="11C">11C</option><option value="11D">11D</option><option value="11E">11E</option></optgroup>
+                    <optgroup label="ថ្នាក់ទី ១២"><option value="12A">12A</option><option value="12B">12B</option><option value="12C">12C</option><option value="12D">12D</option><option value="12E">12E</option></optgroup>
+                </select>
+                <button onclick="exportToExcel()" class="btn-primary" style="background-color: #10b981;">📥 ទាញយកជា Excel (.csv)</button>
+            </div>
+        </div>
+
+        <table class="std-table">
             <thead>
                 <tr>
                     <th>#</th>
@@ -92,43 +105,89 @@
                     <th>ថ្នាក់</th>
                     <th>ពិន្ទុគណិត</th>
                     <th>ពិន្ទុប្រឡង</th>
-                    <th>មធ្យមភាគ</th>
+                    <th>មធ្យមភាគ/សរុប</th>
                     <th>និទ្ទេស</th>
+                    <th>សកម្មភាព</th>
                 </tr>
             </thead>
             <tbody id="studentTableBody">
-                <tr>
-                    <td>១</td>
-                    <td class="st-name">សុខ ចាន់ធា</td>
-                    <td>ស្រី</td>
-                    <td class="st-class">12A</td>
-                    <td class="st-math">95</td>
-                    <td class="st-exam">90</td>
-                    <td class="st-avg">92.5</td>
-                    <td><span class="badge-a st-grade">A</span></td>
-                </tr>
-                <tr>
-                    <td>២</td>
-                    <td class="st-name">កែវ វិចិត្រ</td>
-                    <td>ប្រុស</td>
-                    <td class="st-class">10B</td>
-                    <td class="st-math">78</td>
-                    <td class="st-exam">82</td>
-                    <td class="st-avg">80.0</td>
-                    <td><span class="badge-b st-grade">B</span></td>
-                </tr>
-                <tr>
-                    <td>៣</td>
-                    <td class="st-name">កែវ ពិសិដ្ឋ</td>
-                    <td>ស្រី</td>
-                    <td class="st-class">11A</td>
-                    <td class="st-math">100</td>
-                    <td class="st-exam">98</td>
-                    <td class="st-avg">99.0</td>
-                    <td><span class="badge-a st-grade">A</span></td>
-                </tr>
+                <!-- ទិន្នន័យសិស្សនឹង Render ចេញពី script.js ដោយស្វ័យប្រវត្តិ -->
             </tbody>
         </table>
+    </div>
+
+    <!-- ==================== ៤. តារាងលទ្ធផលផ្លូវការ A4 (Auto-Updated) ==================== -->
+    <div class="official-section-title">
+        <h2>📄 តារាងលទ្ធផលប្រឡងផ្លូវការ (ទម្រង់បោះពុម្ព ឬ Export ជា PDF)</h2>
+        <p>តារាងនេះនឹងធ្វើបច្ចុប្បន្នភាពឈ្មោះ និងពិន្ទុដោយស្វ័យប្រវត្តិ តាមពិន្ទុដែលបញ្ចូលក្នុងប្រព័ន្ធ[cite: 7, 8]!</p>
+        <button class="btn-primary" style="background-color: #059669; margin-bottom: 20px;" onclick="window.print()">🖨️ បោះពុម្ព ឬទាញយកទម្រង់ A4 នេះជា PDF</button>
+    </div>
+
+    <div class="paper-page">
+        <!-- ក្បាលលិខិត -->
+        <div class="header-top">
+            ព្រះរាជាណាចក្រកម្ពុជា<br>
+            ជាតិ សាសនា ព្រះមហាក្សត្រ
+        </div>
+        <div class="school-name">
+            វិទ្យាល័យហ៊ុនសែនតាកែវ
+        </div>
+
+        <!-- ចំណងជើង -->
+        <div class="doc-title">
+            <h2 id="officialDocClass">ពិន្ទុប្រឡងប្រចាំខែ តុលា ថ្នាក់ទី ១០B</h2>
+            <h3>មុខវិជ្ជា៖ គណិតវិទ្យា ឆ្នាំសិក្សា ២០២៦-២០២៧</h3>
+        </div>
+
+        <!-- តារាងពិន្ទុ ពីរជួរ split[cite: 8] -->
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th style="width: 4%;">ល.រ</th>
+                    <th style="width: 20%;">គោត្តនាម-នាម</th>
+                    <th style="width: 6%;">ភេទ</th>
+                    <th style="width: 6%;">សរុប</th>
+                    <th style="width: 6%;">និទ្ទេស</th>
+                    <th style="width: 6%;">ចំ.ថ្នាក់</th>
+                    <th style="width: 6%;">ផ្សេងៗ</th>
+
+                    <th style="width: 4%;">ល.រ</th>
+                    <th style="width: 20%;">គោត្តនាម-នាម</th>
+                    <th style="width: 6%;">ភេទ</th>
+                    <th style="width: 6%;">សរុប</th>
+                    <th style="width: 6%;">និទ្ទេស</th>
+                    <th style="width: 6%;">ចំ.ថ្នាក់</th>
+                    <th style="width: 6%;">ផ្សេងៗ</th>
+                </tr>
+            </thead>
+            <tbody id="officialTableBody">
+                <!-- JavaScript នឹងបំពេញទិន្នន័យតារាង ២ ជួរនៅទីនេះ[cite: 8] -->
+            </tbody>
+        </table>
+
+        <!-- ផ្នែកខាងក្រោម (តារាងសង្ខេប និងកន្លែងស៊ីញ៉ូ)[cite: 8] -->
+        <div class="footer-section">
+            <table class="summary-table">
+                <tr>
+                    <td class="sum-grade grade-A">A</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumA">0</td><td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-D">D</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumD">0</td><td class="sum-unit">នាក់</td>
+                </tr>
+                <tr>
+                    <td class="sum-grade grade-B">B</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumB">0</td><td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-E">E</td><td class="sum-unit"><td class="sum-val" id="sumE">0</td><td class="sum-unit">នាក់</td>
+                </tr>
+                <tr>
+                    <td class="sum-grade grade-C">C</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumC">0</td><td class="sum-unit">នាក់</td>
+                    <td class="sum-grade grade-F">F</td><td class="sum-unit">ចំនួន</td><td class="sum-val" id="sumF">0</td><td class="sum-unit">នាក់</td>
+                </tr>
+            </table>
+
+            <div class="signature-block">
+                <div class="date-line">ថ្ងៃទី...........ខែ តុលា ឆ្នាំ២០២៦</div>
+                <div class="role-title">អ្នកស្រង់ពិន្ទុ</div>
+                <div class="name-line">អាន ម៉េងហុង</div>
+            </div>
+        </div>
     </div>
 
     <!-- ភ្ជាប់ទៅកាន់ឯកសារ JavaScript ខាងក្រៅ -->

@@ -72,4 +72,208 @@
         }
         button {
             background-color: #2563eb;
-            color: white
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #1d4ed8; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: bold;
+        }
+        tr:hover { background-color: #f8fafc; }
+        .badge-a { background: #dcfce7; color: #15803d; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-b { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-c { background: #fef9c3; color: #a16207; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-f { background: #fee2e2; color: #b91c1c; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header-card">
+        <h1>ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (Student Management System)</h1>
+        <p>គ្រប់គ្រងពិន្ទុសិស្សតាមកម្រិតថ្នាក់ (១០, ១១, ១២) និងគណនានិទ្ទេសដោយស្វ័យប្រវត្តិ។</p>
+        
+        <div class="math-box">
+            <strong>រូបមន្តគណនាមធ្យមភាគពិន្ទុ (LaTeX Demo):</strong>
+            $$\bar{X} = \frac{\sum_{i=1}^{n} X_i}{n} = \frac{\text{Math} + \text{Exam}}{2}$$
+        </div>
+    </div>
+
+    <!-- Form បញ្ចូលទិន្នន័យសិស្ស -->
+    <div class="form-card">
+        <h3>បន្ថែមទិន្នន័យសិស្សថ្មី</h3>
+        <form id="studentForm">
+            <div class="form-group">
+                <input type="text" id="studentName" placeholder="ឈ្មោះសិស្ស" required>
+                <select id="studentGender">
+                    <option value="ប្រុស">ប្រុស</option>
+                    <option value="ស្រី">ស្រី</option>
+                </select>
+                <!-- ជម្រើសថ្នាក់រៀន 10, 11, 12 (A-E) -->
+                <select id="studentClass" required>
+                    <option value="" disabled selected>-- ជ្រើសរើសថ្នាក់ --</option>
+                    <optgroup label="ថ្នាក់ទី ១០">
+                        <option value="10A">10A</option><option value="10B">10B</option>
+                        <option value="10C">10C</option><option value="10D">10D</option><option value="10E">10E</option>
+                    </optgroup>
+                    <optgroup label="ថ្នាក់ទី ១១">
+                        <option value="11A">11A</option><option value="11B">11B</option>
+                        <option value="11C">11C</option><option value="11D">11D</option><option value="11E">11E</option>
+                    </optgroup>
+                    <optgroup label="ថ្នាក់ទី ១២">
+                        <option value="12A">12A</option><option value="12B">12B</option>
+                        <option value="12C">12C</option><option value="12D">12D</option><option value="12E">12E</option>
+                    </optgroup>
+                </select>
+                <input type="number" id="mathScore" placeholder="ពិន្ទុគណិតវិទ្យា (0-100)" min="0" max="100" required>
+                <input type="number" id="examScore" placeholder="ពិន្ទុប្រឡង (0-100)" min="0" max="100" required>
+            </div>
+            <button type="submit">បន្ថែមសិស្ស</button>
+        </form>
+    </div>
+
+    <!-- តារាងបង្ហាញបញ្ជីសិស្ស -->
+    <div class="table-card">
+        <div class="filter-box">
+            <strong>តម្រងមើលតាមថ្នាក់៖</strong>
+            <select id="filterClass" onchange="filterStudents()">
+                <option value="ALL">បង្ហាញទាំងអស់</option>
+                <optgroup label="ថ្នាក់ទី ១០">
+                    <option value="10A">10A</option><option value="10B">10B</option>
+                    <option value="10C">10C</option><option value="10D">10D</option><option value="10E">10E</option>
+                </optgroup>
+                <optgroup label="ថ្នាក់ទី ១១">
+                    <option value="11A">11A</option><option value="11B">11B</option>
+                    <option value="11C">11C</option><option value="11D">11D</option><option value="11E">11E</option>
+                </optgroup>
+                <optgroup label="ថ្នាក់ទី ១២">
+                    <option value="12A">12A</option><option value="12B">12B</option>
+                    <option value="12C">12C</option><option value="12D">12D</option><option value="12E">12E</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ឈ្មោះសិស្ស</th>
+                    <th>ភេទ</th>
+                    <th>ថ្នាក់</th>
+                    <th>ពិន្ទុគណិត</th>
+                    <th>ពិន្ទុប្រឡង</th>
+                    <th>មធ្យមភាគ</th>
+                    <th>និទ្ទេស</th>
+                </tr>
+            </thead>
+            <tbody id="studentTableBody">
+                <!-- ទិន្នន័យគំរូ -->
+                <tr data-class="12A">
+                    <td>១</td>
+                    <td>សុខ ចាន់ធា</td>
+                    <td>ស្រី</td>
+                    <td><strong>12A</strong></td>
+                    <td>95</td>
+                    <td>90</td>
+                    <td>92.5</td>
+                    <td><span class="badge-a">A</span></td>
+                </tr>
+                <tr data-class="10B">
+                    <td>២</td>
+                    <td>កែវ វិចិត្រ</td>
+                    <td>ប្រុស</td>
+                    <td><strong>10B</strong></td>
+                    <td>78</td>
+                    <td>82</td>
+                    <td>80.0</td>
+                    <td><span class="badge-b">B</span></td>
+                </tr>
+                <tr data-class="11C">
+                    <td>៣</td>
+                    <td>ចាន់ សុភ័ក្ត្រ</td>
+                    <td>ប្រុស</td>
+                    <td><strong>11C</strong></td>
+                    <td>88</td>
+                    <td>85</td>
+                    <td>86.5</td>
+                    <td><span class="badge-b">B</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let studentCount = 3;
+
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('studentName').value;
+            const gender = document.getElementById('studentGender').value;
+            const sClass = document.getElementById('studentClass').value;
+            const math = parseFloat(document.getElementById('mathScore').value);
+            const exam = parseFloat(document.getElementById('examScore').value);
+
+            const avg = ((math + exam) / 2).toFixed(1);
+
+            let grade = 'F';
+            let badgeClass = 'badge-f';
+            if (avg >= 90) { grade = 'A'; badgeClass = 'badge-a'; }
+            else if (avg >= 80) { grade = 'B'; badgeClass = 'badge-b'; }
+            else if (avg >= 70) { grade = 'C'; badgeClass = 'badge-c'; }
+
+            studentCount++;
+
+            const tbody = document.getElementById('studentTableBody');
+            const newRow = `
+                <tr data-class="${sClass}">
+                    <td>${studentCount}</td>
+                    <td>${name}</td>
+                    <td>${gender}</td>
+                    <td><strong>${sClass}</strong></td>
+                    <td>${math}</td>
+                    <td>${exam}</td>
+                    <td>${avg}</td>
+                    <td><span class="${badgeClass}">${grade}</span></td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', newRow);
+            document.getElementById('studentForm').reset();
+            filterStudents(); // ធ្វើបច្ចុប្បន្នភាពតារាងតាម Filter
+        });
+
+        // មុខងារ Filter ស្វែងរកតាមថ្នាក់
+        function filterStudents() {
+            const selectedClass = document.getElementById('filterClass').value;
+            const rows = document.querySelectorAll('#studentTableBody tr');
+
+            rows.forEach(row => {
+                const rowClass = row.getAttribute('data-class');
+                if (selectedClass === 'ALL' || rowClass === selectedClass) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

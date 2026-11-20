@@ -85,6 +85,10 @@ input,select{font:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD1
 .seg{display:inline-flex;border:1px solid #CBD1E2;border-radius:8px;overflow:hidden}
 .seg button{all:unset;cursor:pointer;padding:4px 14px;font-size:13px}
 .seg button.on.P{background:#17795A;color:#fff}.seg button.on.L{background:#B7791F;color:#fff}.seg button.on.X{background:#B42318;color:#fff}
+.trk{margin:10px 0 14px;border:1px solid var(--line);border-radius:8px;padding:8px 14px;background:var(--bg)}
+.trk summary{cursor:pointer;font-size:14px;color:var(--navy);font-weight:500}
+.trkgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.inl{flex-direction:row;align-items:center;gap:8px}
 @media print{
   @page{size:A4;margin:8mm}
   .bar,.hero,.ctrl,.tabs,#stats,#pStu,#pSc,#pAt,#studentDashboard,.off-tools{display:none!important}

@@ -95,3 +95,16 @@ input,select{font:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD1
   body{background:#fff}main{padding:0;max-width:none}
   .paper-page{box-shadow:none;width:auto;padding:0;overflow:visible}
 }
+.book-page{width:297mm;padding:10mm;page:book}
+@page book{size:A4 landscape;margin:8mm}
+.bk-top{display:flex;justify-content:space-between;align-items:flex-start;font-family:Moul,serif;font-size:12px;line-height:1.9;color:#1A2A5E;gap:12px}
+.bk-r{text-align:center}
+.bk-table{font-size:10px}
+.bk-table th,.bk-table td{padding:1px 2px;height:18px}
+.bk-table th.v span{display:inline-block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;max-height:130px}
+.bk-foot{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:14px}
+.bk-stat{font-size:12px;line-height:2}
+.bk-matrix{font-size:10px;text-align:center}
+.bk-matrix th{border:1px solid #000;padding:2px 4px;background:#EDEDED}
+.bk-matrix th.v span{display:inline-block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+@media print{.book-page{width:auto;padding:0}}

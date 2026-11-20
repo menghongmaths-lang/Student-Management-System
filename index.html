@@ -53,8 +53,11 @@
 
     <div id="pSc" class="card" hidden>
       <div class="lhead"><h2>បញ្ចូលពិន្ទុតាមខែ</h2>
-        <div class="tools"><input id="newSubj" placeholder="មុខវិជ្ជាថ្មី"><button class="btn ghost" onclick="addSubject()">បន្ថែមមុខវិជ្ជា</button></div></div>
-      <div class="chips" id="subjChips"></div>
+        <div class="tools"><label class="inl">ថ្នាក់<select id="scClass" onchange="renderGrid()"></select></label></div></div>
+      <div class="tabs" id="lvTabs"></div>
+      <details class="trk"><summary>កំណត់ឆាក់ថ្នាក់ទី ១១ និង ១២ (វិទ្យាសាស្ត្រ / សង្គម)</summary><div class="trkgrid" id="trackBox"></div></details>
+      <div class="lhead"><div class="chips" id="subjChips"></div>
+        <div class="tools"><input id="newSubj" placeholder="មុខវិជ្ជាថ្មី"><input id="newMax" type="number" min="1" placeholder="ពិន្ទុអតិបរមា" style="width:150px"><button class="btn ghost" onclick="addSubject()">បន្ថែមមុខវិជ្ជា</button><button class="btn ghost" onclick="resetSubj()">ស្ដារតាមរបបផ្លូវការ</button></div></div>
       <div class="tw"><table class="std-table"><thead id="scHead"></thead><tbody id="scBody"></tbody></table></div>
     </div>
 
@@ -64,30 +67,29 @@
       <div class="chips" id="atStats"></div>
       <div class="tw"><table class="std-table"><thead><tr><th>#</th><th>ឈ្មោះ</th><th>ស្ថានភាព</th><th>សរុបក្នុងខែ</th></tr></thead><tbody id="atBody"></tbody></table></div>
     </div>
-
     <section id="officialSection">
-      <div class="off-tools">
-        <div><h2>តារាងលទ្ធផលផ្លូវការ (A4)</h2><p>ធ្វើបច្ចុប្បន្នភាពដោយស្វ័យប្រវត្តិតាមថ្នាក់ដែលបានជ្រើស។</p></div>
-        <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
+    <div class="off-tools">
+      <div><h2>តារាងលទ្ធផលផ្លូវការ (A4)</h2><p>ធ្វើបច្ចុប្បន្នភាពដោយស្វ័យប្រវត្តិតាមថ្នាក់ដែលបានជ្រើស។</p></div>
+      <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
+    </div>
+    <div class="paper-page">
+      <div class="header-top">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+      <div class="school-name">វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
+      <div class="doc-title">
+        <h2 id="officialDocClass"></h2>
+        <h3 id="officialSubj"></h3>
       </div>
-      <div class="paper-page">
-        <div class="header-top">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-        <div class="school-name">វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
-        <div class="doc-title">
-          <h2 id="officialDocClass"></h2>
-          <h3 id="officialSubj"></h3>
-        </div>
-        <table class="score-table"><thead id="officialHead"></thead><tbody id="officialTableBody"></tbody></table>
-        <div class="footer-section">
-          <table class="summary-table" id="sumTable"></table>
-          <div class="signature-block">
-            <div>ថ្ងៃទី...........ខែ <span id="offMonth"></span> ឆ្នាំ២០២៦</div>
-            <div class="role-title">អ្នកស្រង់ពិន្ទុ</div>
-            <div class="name-line">អាន ម៉េងហុង</div>
-          </div>
+      <table class="score-table"><thead id="officialHead"></thead><tbody id="officialTableBody"></tbody></table>
+      <div class="footer-section">
+        <table class="summary-table" id="sumTable"></table>
+        <div class="signature-block">
+          <div>ថ្ងៃទី...........ខែ <span id="offMonth"></span> ឆ្នាំ២០២៦</div>
+          <div class="role-title">អ្នកស្រង់ពិន្ទុ</div>
+          <div class="name-line">អាន ម៉េងហុង</div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
   </div>
 
   <div id="studentDashboard" hidden>

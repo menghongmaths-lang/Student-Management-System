@@ -57,7 +57,7 @@ function switchRole(r){const T=r=='teacher';isT=T;
   $('#btnTeacher').classList.toggle('on',T);$('#btnStudent').classList.toggle('on',!T);
   $('#headerTitle').textContent=T?'ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (សម្រាប់គ្រូបង្រៀន)':'ប្រព័ន្ធពិនិត្យមើលពិន្ទុសិក្សា (សម្រាប់សិស្សានុសិស្ស)';
   $('#headerDesc').textContent=T?'គ្រប់គ្រង បញ្ចូលពិន្ទុសិស្ស និងគណនាមធ្យមភាគដោយស្វ័យប្រវត្តិ។':'ស្វែងរក និងពិនិត្យមើលលទ្ធផលប្រឡងប្រចាំខែរបស់អ្នក។'}
-function showTab(id){['pStu','pSc','pAt','officialSection'].forEach(x=>$('#'+x).hidden=x!=id);
+function showTab(id){['pStu','pSc','pAt','officialSection','pBook'].forEach(x=>$('#'+x).hidden=x!=id);
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==id))}
 $('#tabs').onclick=e=>{if(e.target.dataset.t)showTab(e.target.dataset.t)};
 function render(){renderLv();fillSubj();renderGrid();renderAt();renderRest()}
@@ -69,7 +69,7 @@ function renderRest(){
   const d=$('#atDay').value,mk=C.filter(s=>(AT[s.id]||{})[d]),ar=mk.length?Math.round(mk.filter(s=>AT[s.id][d]!='X').length/mk.length*100)+'%':'-';
   $('#stats').innerHTML=`<div class="stat"><span>សិស្សសរុប</span><b>${C.length}</b></div><div class="stat"><span>មធ្យមភាគ (%)</span><b>${m==null?'-':f1(m)}</b></div><div class="stat"><span>អត្រាជាប់ (≥៥០%)</span><b>${pass}</b></div><div class="stat"><span>វត្តមានថ្ងៃ ${esc(d)}</span><b>${ar}</b></div>`;
   $('#studentTableBody').innerHTML=L.length?L.map((s,i)=>{const p=pt(s),a=attMonth(s.id);return`<tr><td>${i+1}</td><td><b>${esc(s.name)}</b></td><td>${s.sex}</td><td>${s.cls}</td><td>${p?`<b>${p.t}</b><small>/${p.m}</small>`:'-'}</td><td>${badge(grade(val(s)))}</td><td>${a.X}${a.L?` <small>(យឺត ${a.L})</small>`:''}</td><td class="act"><button onclick="editStudent(${s.id})">កែ</button><button class="del" onclick="deleteStudent(${s.id})">លុប</button></td></tr>`}).join(''):'<tr><td colspan="8" class="empty">មិនទាន់មានសិស្ស</td></tr>';
-  renderOfficial(C,R)}
+  renderOfficial(C,R);renderBook()}
 
 function renderLv(){
   $('#lvTabs').innerHTML=LV.map(([k,n])=>`<button class="${k==lv?'on':''}" onclick="setLv('${k}')">${n}</button>`).join('');
@@ -115,6 +115,49 @@ function renderOfficial(C,R){
   const cnt={};GRADES.forEach(x=>cnt[x[0]]=0);C.forEach(s=>{const v=val(s);if(v!=null)cnt[grade(v)]++});
   const pair=x=>`<td class="gr">${x}</td><td>ចំនួន</td><td>${kh(cnt[x])}</td><td>នាក់</td>`;
   $('#sumTable').innerHTML=[['A','D'],['B','E'],['C','F']].map(p=>`<tr>${pair(p[0])}${pair(p[1])}</tr>`).join('')}
+
+// ===== សៀវភៅពិន្ទុប្រចាំខែ (A4 ផ្ដេក) =====
+function renderBook(){
+  const c=cls(),ok=c!='ALL';
+  $('#bkEmpty').hidden=ok;$('#bkPaper').hidden=!ok;
+  if(!ok)return;
+  const L=subsG(kOf(c)),C=S.filter(s=>s.cls==c);
+
+  // គណនាតាមសិស្សម្នាក់ៗ
+  const rows=C.map(s=>{
+    const o=sc(s.id),p=pt(s,'ALL'),a=attMonth(s.id);
+    const n=L.filter(([j])=>typeof o[j]=='number').length;
+    return{s,o,p,a,pct:p?p.t/p.m*100:null,avg:p&&n?p.t/n:null}});
+  const ord=rows.filter(r=>r.pct!=null).sort((a,b)=>b.pct-a.pct);
+  ord.forEach((r,i)=>r.rank=i&&r.pct==ord[i-1].pct?ord[i-1].rank:i+1);
+
+  // ចំណងជើង
+  $('#bkTitle').textContent=`បញ្ជីពិន្ទុប្រឡងប្រចាំខែ ${MN[+mo()-1]} ថ្នាក់ទី ${kh(c)}`;
+
+  // តារាងធំ
+  const head=`<thead><tr><th rowspan="2">ល.រ</th><th rowspan="2">គោត្តនាម-នាម</th><th rowspan="2">ភេទ</th>`
+    +L.map(([j])=>`<th rowspan="2" class="v"><span>${esc(j)}</span></th><th rowspan="2" class="v"><span>និទ្ទេស</span></th>`).join('')
+    +`<th rowspan="2" class="v"><span>ពិន្ទុសរុប</span></th><th rowspan="2" class="v"><span>មធ្យមភាគ</span></th><th rowspan="2" class="v"><span>ចំណាត់ថ្នាក់</span></th><th rowspan="2" class="v"><span>និទ្ទេស</span></th><th colspan="2">អវត្តមាន</th></tr>`
+    +`<tr><th>ខ្វះ</th><th>យឺត</th></tr></thead>`;
+  const body='<tbody>'+rows.map((r,i)=>`<tr><td>${i+1}</td><td class="nm">${esc(r.s.name)}</td><td>${r.s.sex}</td>`
+    +L.map(([j,mx])=>{const v=r.o[j];return typeof v=='number'?`<td>${v}</td><td>${badge(grade(v/mx*100))}</td>`:'<td></td><td></td>'}).join('')
+    +`<td><b>${r.p?f1(r.p.t):''}</b></td><td>${r.avg==null?'':r.avg.toFixed(2)}</td><td>${r.rank??''}</td><td>${r.pct==null?'':badge(grade(r.pct))}</td><td>${r.a.X}</td><td>${r.a.L}</td></tr>`).join('')+'</tbody>';
+  $('#bkTable').innerHTML=head+body;
+
+  // ស្ថិតិ សរុប / ស្រី / ជាប់ / ធ្លាក់
+  const fem=r=>r.s.sex=='ស្រី';
+  const scored=rows.filter(r=>r.pct!=null),pass=scored.filter(r=>r.pct>=50),fail=scored.filter(r=>r.pct<50);
+  $('#bkStat').innerHTML=
+    `<div>សិស្សសរុប ${kh(rows.length)} នាក់ ស្រី ${kh(rows.filter(fem).length)} នាក់</div>`
+   +`<div>ជាប់មធ្យមភាគ ${kh(pass.length)} នាក់ ស្រី ${kh(pass.filter(fem).length)} នាក់</div>`
+   +`<div>ធ្លាក់មធ្យមភាគ ${kh(fail.length)} នាក់ ស្រី ${kh(fail.filter(fem).length)} នាក់</div>`;
+
+  // តារាងចំនួននិទ្ទេស A-F តាមមុខវិជ្ជា
+  const cnt=L.map(([j,mx])=>{const k={};GRADES.forEach(x=>k[x[0]]=0);
+    rows.forEach(r=>{const v=r.o[j];if(typeof v=='number')k[grade(v/mx*100)]++});return k});
+  $('#bkMatrix').innerHTML=`<tr><th></th>${L.map(([j])=>`<th class="v"><span>${esc(j)}</span></th>`).join('')}</tr>`
+    +GRADES.map(([gl])=>`<tr><th>${badge(gl)}</th>${cnt.map(k=>`<td>${kh(k[gl])}</td>`).join('')}</tr>`).join('');
+}
 
 $('#studentForm').addEventListener('submit',e=>{e.preventDefault();
   const o={name:$('#studentName').value.trim(),sex:$('#studentGender').value,cls:$('#studentClass').value};if(!o.name)return;

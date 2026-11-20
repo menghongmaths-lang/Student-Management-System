@@ -17,7 +17,8 @@ const grade=v=>v==null?'-':GRADES.find(g=>v>=g[1])[0];
 const badge=g=>g=='-'?'-':`<span class="g g${g}">${g}</span>`;
 const curM=()=>String(new Date().getMonth()+1).padStart(2,'0');
 const today=()=>new Date().toISOString().slice(0,10);
-let S=[],SC={},AT={},CT={},SUBJ={},editId=null,isT=true;
+let S=[],SC={},AT={},CT={},SUBJ={},editId=null,isT=true,lv='10';
+const LV=[['10','ថ្នាក់ទី ១០'],['11-sci','ថ្នាក់ទី ១១ វិទ្យាសាស្ត្រ'],['11-soc','ថ្នាក់ទី ១១ សង្គម'],['12-sci','ថ្នាក់ទី ១២ វិទ្យាសាស្ត្រ'],['12-soc','ថ្នាក់ទី ១២ សង្គម']];
 for(const k in OFF)SUBJ[k]=cp(OFF[k]);
 
 (function load(){
@@ -51,7 +52,7 @@ function ranks(L){const o=L.filter(s=>val(s)!=null).sort((a,b)=>val(b)-val(a)),r
   o.forEach((s,i)=>r[s.id]=i&&val(s)==val(o[i-1])?r[o[i-1].id]:i+1);return r}
 const tot=s=>{const p=pt(s,'ALL');return p?`<b>${p.t}</b> <small>/${p.m} · ${f1(p.t/p.m*100)}%</small>`:'-'};
 
-function switchRole(r){const T=r=='teacher';isT=T;trackUI();
+function switchRole(r){const T=r=='teacher';isT=T;
   $('#teacherArea').hidden=!T;$('#studentDashboard').hidden=T;$('#lblClass').hidden=!T;$('#lblSubj').hidden=!T;
   $('#btnTeacher').classList.toggle('on',T);$('#btnStudent').classList.toggle('on',!T);
   $('#headerTitle').textContent=T?'ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (សម្រាប់គ្រូបង្រៀន)':'ប្រព័ន្ធពិនិត្យមើលពិន្ទុសិក្សា (សម្រាប់សិស្សានុសិស្ស)';
@@ -59,7 +60,7 @@ function switchRole(r){const T=r=='teacher';isT=T;trackUI();
 function showTab(id){['pStu','pSc','pAt','officialSection'].forEach(x=>$('#'+x).hidden=x!=id);
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==id))}
 $('#tabs').onclick=e=>{if(e.target.dataset.t)showTab(e.target.dataset.t)};
-function render(){trackUI();fillSubj();renderGrid();renderAt();renderRest()}
+function render(){renderLv();fillSubj();renderGrid();renderAt();renderRest()}
 
 function renderRest(){
   const C=inCls(),q=$('#q').value.trim().toLowerCase(),L=C.filter(s=>s.name.toLowerCase().includes(q)),R=ranks(C);
@@ -70,19 +71,27 @@ function renderRest(){
   $('#studentTableBody').innerHTML=L.length?L.map((s,i)=>{const p=pt(s),a=attMonth(s.id);return`<tr><td>${i+1}</td><td><b>${esc(s.name)}</b></td><td>${s.sex}</td><td>${s.cls}</td><td>${p?`<b>${p.t}</b><small>/${p.m}</small>`:'-'}</td><td>${badge(grade(val(s)))}</td><td>${a.X}${a.L?` <small>(យឺត ${a.L})</small>`:''}</td><td class="act"><button onclick="editStudent(${s.id})">កែ</button><button class="del" onclick="deleteStudent(${s.id})">លុប</button></td></tr>`}).join(''):'<tr><td colspan="8" class="empty">មិនទាន់មានសិស្ស</td></tr>';
   renderOfficial(C,R)}
 
-function renderGrid(){const g=G(),C=inCls();
-  if(!g){$('#subjChips').innerHTML='';$('#scHead').innerHTML='';$('#scBody').innerHTML='<tr><td class="empty">សូមជ្រើស "ថ្នាក់" នៅរបារខាងលើ ដើម្បីបញ្ចូលពិន្ទុ</td></tr>';return}
-  const L=subsG(g),T=L.reduce((a,x)=>a+x[1],0);
+function renderLv(){
+  $('#lvTabs').innerHTML=LV.map(([k,n])=>`<button class="${k==lv?'on':''}" onclick="setLv('${k}')">${n}</button>`).join('');
+  const cs=CLASSES.filter(c=>kOf(c)==lv),v=$('#scClass').value;
+  $('#scClass').innerHTML='<option value="ALL">គ្រប់ថ្នាក់ក្នុងកម្រិតនេះ</option>'+cs.map(c=>`<option>${c}</option>`).join('');
+  $('#scClass').value=cs.includes(v)?v:'ALL';
+  $('#trackBox').innerHTML=CLASSES.filter(c=>gOf(c)!='10').map(c=>{const t=kOf(c).endsWith('soc');return`<label>${c}<select onchange="setCT('${c}',this.value)"><option value="sci" ${t?'':'selected'}>វិទ្យាសាស្ត្រ</option><option value="soc" ${t?'selected':''}>សង្គម</option></select></label>`}).join('')}
+function setLv(k){lv=k;renderLv();renderGrid()}
+function setCT(c,v){CT[c]=v;save();render()}
+function renderGrid(){const L=subsG(lv),T=L.reduce((a,x)=>a+x[1],0),cs=$('#scClass').value;
+  const C=S.filter(s=>kOf(s.cls)==lv&&(cs=='ALL'||s.cls==cs));
   $('#subjChips').innerHTML=L.map(([j,mx],k)=>`<span class="chip">${esc(j)} · ${mx}<button onclick="rmSubject(${k})" aria-label="លុប">✕</button></span>`).join('')+`<span class="chip"><b>ពិន្ទុសរុប ${T}</b></span>`;
-  $('#scHead').innerHTML=`<tr><th>#</th><th>ឈ្មោះ</th>${L.map(([j,mx])=>`<th>${esc(j)}<br><small>/${mx}</small></th>`).join('')}<th>សរុប</th></tr>`;
-  $('#scBody').innerHTML=C.length?C.map((s,i)=>{const o=sc(s.id);return`<tr><td>${i+1}</td><td>${esc(s.name)}</td>${L.map(([j,mx],k)=>`<td><input class="num" type="number" min="0" max="${mx}" value="${o[j]??''}" onchange="setScore(${s.id},${k},this)"></td>`).join('')}<td id="av${s.id}">${tot(s)}</td></tr>`}).join(''):`<tr><td colspan="${L.length+3}" class="empty">មិនមានសិស្សក្នុងថ្នាក់នេះ</td></tr>`}
-function setScore(id,k,el){const [j,mx]=subsG(G())[k],o=((SC[id]??={})[mo()]??={});
+  $('#scHead').innerHTML=`<tr><th>#</th><th>ឈ្មោះ</th><th>ថ្នាក់</th>${L.map(([j,mx])=>`<th>${esc(j)}<br><small>/${mx}</small></th>`).join('')}<th>សរុប</th></tr>`;
+  const none=CLASSES.some(c=>kOf(c)==lv)?'មិនមានសិស្សក្នុងកម្រិតនេះ':'មិនមានថ្នាក់ណាក្នុងកម្រិតនេះ — សូមកំណត់ឆាក់នៅខាងលើ';
+  $('#scBody').innerHTML=C.length?C.map((s,i)=>{const o=sc(s.id);return`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${s.cls}</td>${L.map(([j,mx],k)=>`<td><input class="num" type="number" min="0" max="${mx}" value="${o[j]??''}" onchange="setScore(${s.id},${k},this)"></td>`).join('')}<td id="av${s.id}">${tot(s)}</td></tr>`}).join(''):`<tr><td colspan="${L.length+4}" class="empty">${none}</td></tr>`}
+function setScore(id,k,el){const [j,mx]=subsG(lv)[k],o=((SC[id]??={})[mo()]??={});
   if(el.value==='')delete o[j];else{o[j]=Math.min(mx,Math.max(0,Math.round(+el.value*10)/10));el.value=o[j]}
   save();$('#av'+id).innerHTML=tot(S.find(s=>s.id==id));renderRest()}
-function addSubject(){const g=G();if(!g){alert('សូមជ្រើសថ្នាក់ជាមុន');return}
+function addSubject(){const g=lv;
   const v=$('#newSubj').value.trim(),mx=+$('#newMax').value;if(!v||!(mx>0))return alert('សូមបញ្ចូលឈ្មោះ និងពិន្ទុអតិបរមា');
   const L=SUBJ[g]??=cp(OFF[g]||[]);if(L.some(x=>x[0]==v))return;L.push([v,mx]);$('#newSubj').value='';$('#newMax').value='';save();render()}
-function rmSubject(k){const g=G(),L=SUBJ[g]??=cp(OFF[g]||[]);if(!confirm('លុបមុខវិជ្ជា "'+L[k][0]+'" ចេញពីថ្នាក់ទី '+kh(cls())+'?'))return;L.splice(k,1);save();render()}
+function rmSubject(k){const g=lv,L=SUBJ[g]??=cp(OFF[g]||[]);if(!confirm('លុបមុខវិជ្ជា "'+L[k][0]+'" ចេញពី '+LV.find(x=>x[0]==g)[1]+'?'))return;L.splice(k,1);save();render()}
 
 function renderAt(){const C=inCls(),d=$('#atDay').value,c={P:0,L:0,X:0,N:0};
   C.forEach(s=>c[(AT[s.id]||{})[d]||'N']++);
@@ -132,8 +141,6 @@ function exportToExcel(){const C=inCls(),R=ranks(C),g=G();
   const t=rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+t],{type:'text/csv'}));a.download=`ពិន្ទុសិស្ស-${MN[+mo()-1]}.csv`;a.click()}
 
-function trackUI(){const c=cls(),g=c!='ALL'&&gOf(c)!='10';$('#lblTrack').hidden=!(isT&&g);if(g)$('#selTrack').value=CT[c]||'sci'}
-function setTrack(){CT[cls()]=$('#selTrack').value;save();render()}
-function resetSubj(){const g=G();if(!g)return alert('សូមជ្រើសថ្នាក់ជាមុន');if(!confirm('ស្ដារមុខវិជ្ជា និងពិន្ទុអតិបរមាតាមរបបផ្លូវការ?'))return;SUBJ[g]=cp(OFF[g]);save();render()}
+function resetSubj(){const g=lv;if(!confirm('ស្ដារមុខវិជ្ជា និងពិន្ទុអតិបរមាតាមរបបផ្លូវការ?'))return;SUBJ[g]=cp(OFF[g]);save();render()}
 
 switchRole('teacher');showTab('pStu');render();

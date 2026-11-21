@@ -60,7 +60,7 @@ function switchRole(r){const T=r=='teacher';isT=T;
   $('#btnTeacher').classList.toggle('on',T);$('#btnStudent').classList.toggle('on',!T);
   $('#headerTitle').textContent=T?'ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (សម្រាប់គ្រូបង្រៀន)':'ប្រព័ន្ធពិនិត្យមើលពិន្ទុសិក្សា (សម្រាប់សិស្សានុសិស្ស)';
   $('#headerDesc').textContent=T?'គ្រប់គ្រង បញ្ចូលពិន្ទុសិស្ស និងគណនាមធ្យមភាគដោយស្វ័យប្រវត្តិ។':'ស្វែងរក និងពិនិត្យមើលលទ្ធផលប្រឡងប្រចាំខែរបស់អ្នក។'}
-function showTab(id){['pPeriod','pDash','pStu','pSc','pAt','officialSection','pBook'].forEach(x=>$('#'+x).hidden=x!=id);
+function showTab(id){['pCard','pPeriod','pDash','pStu','pSc','pAt','officialSection','pBook'].forEach(x=>$('#'+x).hidden=x!=id);
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==id))}
 $('#tabs').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.t)showTab(b.dataset.t)};
 function render(){renderLv();fillSubj();renderGrid();renderAt();renderRest()}
@@ -72,7 +72,7 @@ function renderRest(){
   const d=$('#atDay').value,mk=C.filter(s=>(AT[s.id]||{})[d]),ar=mk.length?Math.round(mk.filter(s=>AT[s.id][d]!='X').length/mk.length*100)+'%':'-';
   $('#stats').innerHTML=`<div class="stat"><span>សិស្សសរុប</span><b>${C.length}</b></div><div class="stat"><span>មធ្យមភាគ (%)</span><b>${m==null?'-':f1(m)}</b></div><div class="stat"><span>អត្រាជាប់ (≥៥០%)</span><b>${pass}</b></div><div class="stat"><span>វត្តមានថ្ងៃ ${esc(d)}</span><b>${ar}</b></div>`;
   $('#studentTableBody').innerHTML=L.length?L.map((s,i)=>{const p=pt(s),a=attMonth(s.id);return`<tr><td>${i+1}</td><td><b>${esc(s.name)}</b></td><td>${s.sex}</td><td>${s.cls}</td><td>${p?`<b>${p.t}</b><small>/${p.m}</small>`:'-'}</td><td>${badge(grade(val(s)))}</td><td>${a.X}${a.L?` <small>(យឺត ${a.L})</small>`:''}</td><td class="act"><button onclick="editStudent(${s.id})">កែ</button><button class="del" onclick="deleteStudent(${s.id})">លុប</button></td></tr>`}).join(''):'<tr><td colspan="8" class="empty">មិនទាន់មានសិស្ស</td></tr>';
-  renderOfficial(C,R);renderBook();renderDash(C);renderPeriod()}
+  renderOfficial(C,R);renderBook();renderDash(C);renderPeriod();renderCard()}
 
 function renderLv(){
   $('#lvTabs').innerHTML=LV.map(([k,n])=>`<button class="${k==lv?'on':''}" onclick="setLv('${k}')">${n}</button>`).join('');
@@ -175,6 +175,43 @@ function renderPeriod(){
    +`<div>ជាប់មធ្យមភាគ ${kh(pass.length)} នាក់ ស្រី ${kh(pass.filter(fem).length)} នាក់</div>`
    +`<div>ធ្លាក់មធ្យមភាគ ${kh(fail.length)} នាក់ ស្រី ${kh(fail.filter(fem).length)} នាក់</div>`
    +`<div>និទ្ទេស ${GRADES.map(([k])=>`${k}៖${kh(gc[k])}`).join(' · ')}</div>`}
+
+// ===== ប័ណ្ណលទ្ធផលសិក្សារបស់សិស្ស =====
+const monthSc=(s,m,j)=>{const v=((SC[s.id]||{})[m]||{})[j];return typeof v=='number'?v:null};
+const meanOf=a=>{a=a.filter(v=>v!=null);return a.length?avgOf(a):null};
+const semSc=(s,k,j)=>meanOf(semMonths(k).map(m=>monthSc(s,m,j)));
+const perSc=(s,T,j)=>T=='month'?monthSc(s,mo(),j):T=='s1'?semSc(s,1,j):T=='s2'?semSc(s,2,j):meanOf([semSc(s,1,j),semSc(s,2,j)]);
+function cardRes(s,T){let t=0,m=0,n=0;
+  const rows=subs(s).map(([j,mx])=>{const v=perSc(s,T,j);if(v!=null){t+=v;m+=mx;n++}return{j,mx,v}});
+  return n?{rows,t,m,n,pct:t/m*100,avg:t/n,mavg:m/n}:{rows,n:0}}
+function cardRank(s,T){const me=cardRes(s,T);if(!me.n)return null;
+  return 1+S.filter(x=>x.cls==s.cls).filter(x=>{const r=cardRes(x,T);return r.n&&r.pct>me.pct}).length}
+function attPer(id,T){
+  const M=T=='month'?[mo()]:T=='s1'?semMonths(1):T=='s2'?semMonths(2):[...semMonths(1),...semMonths(2)];
+  const c={X:0,L:0};Object.entries(AT[id]||{}).forEach(([d,v])=>{if(M.includes(d.slice(5,7))&&c[v]!=null)c[v]++});return c}
+function cardHtml(s,T){
+  const r=cardRes(s,T),n=S.filter(x=>x.cls==s.cls).length,rk=cardRank(s,T),a=attPer(s.id,T);
+  const nm={month:'ប្រចាំខែ'+MN[+mo()-1],s1:'ប្រចាំឆមាសទី១',s2:'ប្រចាំឆមាសទី២',year:'ប្រចាំឆ្នាំ'}[T];
+  const body=r.rows.map(({j,mx,v},i)=>{const g=v==null?null:grade(v/mx*100);
+    return`<tr><td>${kh(i+1)}</td><td class="nm">${esc(j)}</td><td>${mx}</td><td>${v==null?'':f1(v)}</td>${GRADES.map(([k])=>`<td>${g==k?'✓':''}</td>`).join('')}</tr>`}).join('');
+  const sign='ថ្ងៃទី.......ខែ.......ឆ្នាំ........';
+  return`<div class="paper-page rc-page">
+<div class="bk-top"><div class="bk-l">មន្ទីរអប់រំ យុវជន និង កីឡាខេត្តកណ្ដាល<br>ការិយាល័យអប់រំ យុវជន និង កីឡាស្រុកកៀនស្វាយ<br>វិទ្យាល័យសាន់នីវូសំរោងធំ</div><div class="bk-r">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div></div>
+<div class="doc-title"><h2>លទ្ធផលនៃការសិក្សា${nm}</h2><h3>ឆ្នាំសិក្សា ២០២៦-២០២៧</h3></div>
+<div class="rc-info">សិស្សឈ្មោះ៖ <b>${esc(s.name)}</b> &nbsp; ភេទ <b>${s.sex}</b> &nbsp; ថ្នាក់ទី <b>${kh(s.cls)}</b> &nbsp; សិស្សសរុប <b>${kh(n)}</b> នាក់</div>
+<table class="score-table rc-table"><thead><tr><th rowspan="2">ល.រ</th><th rowspan="2">មុខវិជ្ជា</th><th colspan="2">ពិន្ទុតាមមុខវិជ្ជា</th><th colspan="6">និទ្ទេសតាមមុខវិជ្ជា</th></tr>
+<tr><th>ពិន្ទុអតិបរមា</th><th>ពិន្ទុទទួលបាន</th>${GRADES.map(([k])=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${body}
+<tr><td colspan="2">ពិន្ទុសរុប</td><td>${r.n?f1(r.m):''}</td><td>${r.n?f1(r.t):''}</td><td colspan="2" rowspan="2">វត្តមាន</td><td colspan="2">អវត្តមាន</td><td>${a.X}</td><td>ដង</td></tr>
+<tr><td colspan="2">មធ្យមភាគ</td><td>${r.n?r.mavg.toFixed(2):''}</td><td>${r.n?r.avg.toFixed(2):''}</td><td colspan="2">យឺត</td><td>${a.L}</td><td>ដង</td></tr>
+<tr><td colspan="2">ចំណាត់ថ្នាក់</td><td colspan="2">${rk??''}</td><td colspan="2">និទ្ទេសរួម</td><td colspan="4">${r.n?`<b>${grade(r.pct)}</b> (${f1(r.pct)}%)`:''}</td></tr></tbody></table>
+<div class="rc-foot"><div class="signature-block" contenteditable="true">បានឃើញ និងឯកភាព<br>${sign}<br><b>នាយកវិទ្យាល័យ</b></div><div class="signature-block" contenteditable="true">${sign}<br><b>គ្រូទទួលបន្ទុកថ្នាក់</b><div class="name-line">ឈ្មោះគ្រូ</div></div></div>
+<div class="rc-note">មតិមាតាបិតា ឬ អាណាព្យាបាល៖<i></i><i></i><i></i></div></div>`}
+function renderCard(){
+  const T=$('#rcType').value,C=inCls(),sel=$('#rcStu'),v=sel.value;
+  sel.innerHTML=(cls()!='ALL'?`<option value="ALL">ទាំងថ្នាក់ (${C.length} នាក់)</option>`:'')+C.map(s=>`<option value="${s.id}">${esc(s.name)} · ${s.cls}</option>`).join('');
+  sel.value=[...sel.options].some(o=>o.value==v)?v:(sel.options[0]?sel.options[0].value:'');
+  const L=sel.value=='ALL'?C:C.filter(s=>s.id==sel.value);
+  $('#rcBox').innerHTML=L.length?L.map(s=>cardHtml(s,T)).join(''):'<p class="empty">មិនមានសិស្ស</p>'}
 
 // ===== សៀវភៅពិន្ទុប្រចាំខែ (A4 ផ្ដេក) =====
 function renderBook(){

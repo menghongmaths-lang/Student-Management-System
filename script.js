@@ -1,5 +1,5 @@
 // ===== 1. SUPABASE CONFIGURATION =====
-const SUPABASE_URL = 'https://https://pqtzhbpdgsqqgejxzpho.supabase.co/rest/v1/.supabase.co';
+const SUPABASE_URL = 'https://https://pqtzhbpdgsqqgejxzpho.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_veLllK4Ar1C0RT_wu4S6ng_XHsAfDKD'; // ប្រើ Publishable Key ត្រង់នេះ
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 

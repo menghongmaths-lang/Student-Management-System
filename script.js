@@ -366,3 +366,33 @@ switchRole('teacher');
 showTab('pDash');
 render();
 syncFromSupabase(); // ស្ទូច Data ពី Supabase នៅពេល App បើកដំបូង
+
+// ===== មុខងារ Sync Data ទាំងអស់ពី Local ទៅ Supabase តាមប៊ូតុង =====
+async function pushAllToSupabase() {
+  alert("កំពុងបញ្ជូនទិន្នន័យទៅ Supabase... សូមរង់ចាំមួយភ្លែត!");
+  try {
+    // 1. Push សិស្ស
+    if (S && S.length > 0) {
+      const { error: e1 } = await _supabase.from('students').upsert(
+        S.map(s => ({ id: s.id, name: s.name, sex: s.sex, cls: s.cls }))
+      );
+      if (e1) console.error("Error Students:", e1);
+    }
+
+    // 2. Push ពិន្ទុ
+    for (const id in SC) {
+      for (const m in SC[id]) {
+        await _supabase.from('scores_data').upsert({ student_id: +id, month: m, scores: SC[id][m] });
+      }
+    }
+
+    // 3. Push វត្តមាន
+    for (const id in AT) {
+      await _supabase.from('attendance_data').upsert({ student_id: +id, attendance: AT[id] });
+    }
+
+    alert("បញ្ជូនទិន្នន័យទៅ Supabase ជោគជ័យ ១០០%! សូមពិនិត្យមើលក្នុង Supabase Dashboard");
+  } catch (err) {
+    alert("មានបញ្ហាក្នុងការ Sync៖ " + err.message);
+  }
+}

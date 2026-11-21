@@ -141,6 +141,13 @@ input,select{font:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD1
 .bk-matrix th{border:1px solid #000;padding:2px 4px;background:#EDEDED}
 .bk-matrix th.v span{display:inline-block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
 
+/* ===== លទ្ធផលឆមាស/ឆ្នាំ ===== */
+.per-table{font-size:11px}
+.per-table td.nm{white-space:nowrap}
+.per-foot{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:14px}
+.per-sign{display:flex;gap:24px}
+.paper-page .g{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
 /* ===== Responsive ===== */
 @media(max-width:900px){
   .app{grid-template-columns:1fr}
@@ -157,7 +164,7 @@ input,select{font:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD1
 /* ===== Print ===== */
 @media print{
   @page{size:A4;margin:8mm}
-  .side,.top,#pDash,.tabs,#pStu,#pSc,#pAt,#studentDashboard,.off-tools{display:none!important}
+  .side,.top,#pDash,.tabs,#pStu,#pSc,#pAt,#studentDashboard,.off-tools,.trk,#perEmpty{display:none!important}
   .app{display:block}
   body{background:#fff}main{padding:0;max-width:none}
   .paper-page{box-shadow:none;width:auto;padding:0;overflow:visible}

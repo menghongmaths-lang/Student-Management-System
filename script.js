@@ -367,9 +367,13 @@ showTab('pDash');
 render();
 syncFromSupabase(); // ស្ទូច Data ពី Supabase នៅពេល App បើកដំបូង
 
-// ===== មុខងារ Sync Data ពី LocalStorage ឬ Form ទៅ Supabase =====
-async function pushAllToSupabase() {
-  alert("កំពុងបញ្ជូនទិន្នន័យទៅ Supabase... សូមរង់ចាំមួយភ្លែត!");
+// ===== មុខងារ Auto Sync ទិន្នន័យទៅ Supabase ដោយស្វ័យប្រវត្តិ (Silent Mode) =====
+async function pushAllToSupabase(isManual = false) {
+  // ប្រសិនបើចុចប៊ូតុង Sync ដោយដៃ ទើបលោត Alert ប្រាប់
+  if (isManual) {
+    alert("កំពុងបញ្ជូនទិន្នន័យទៅ Supabase... សូមរង់ចាំមួយភ្លែត!");
+  }
+
   try {
     // 1. ស្វែងរក Array សិស្សគ្រប់រូបភាពដែលមានក្នុង Script
     let rawStudents = [];
@@ -378,16 +382,14 @@ async function pushAllToSupabase() {
     } else if (typeof students !== 'undefined' && Array.isArray(students) && students.length > 0) {
       rawStudents = students;
     } else {
-      // ប្រសិនបើ LocalStorage គ្មាន Data វានឹងទាញយកពី LocalStorage ផ្ទាល់
       const localData = localStorage.getItem('std_data') || localStorage.getItem('students');
       if (localData) {
         try { rawStudents = JSON.parse(localData); } catch(e) {}
       }
     }
 
-    // ប្រសិនបើនៅតែគ្មានសិស្ស វានឹងប្រាប់ឱ្យបន្ថែមសិស្សជាមុនសិន
     if (!rawStudents || rawStudents.length === 0) {
-      alert("មិនទាន់មានទិន្នន័យសិស្សក្នុងប្រព័ន្ធទេ! សូមសាកល្បងបញ្ចូលសិស្សថ្មី ១-២ នាក់តាម Form ជាមុនសិន។");
+      if (isManual) alert("មិនទាន់មានទិន្នន័យសិស្សក្នុងប្រព័ន្ធទេ!");
       return;
     }
 
@@ -406,7 +408,7 @@ async function pushAllToSupabase() {
     // 3. Upsert ចូល Table students
     const { error: e1 } = await _supabase.from('students').upsert(formattedStudents);
     if (e1) {
-      alert("មានបញ្ហា Insert សិស្ស៖ " + e1.message);
+      if (isManual) alert("មានបញ្ហា Insert សិស្ស៖ " + e1.message);
       return;
     }
 
@@ -432,8 +434,13 @@ async function pushAllToSupabase() {
       }
     }
 
-    alert("បញ្ជូនទិន្នន័យទៅ Supabase ជោគជ័យ ១០០%!");
+    // ប្រសិនបើជាការ Sync ដោយដៃ ទើបបង្ហាញ Alert
+    if (isManual) {
+      alert("បញ្ជូនទិន្នន័យទៅ Supabase ជោគជ័យ ១០០%!");
+    } else {
+      console.log("Auto Synced to Supabase successfully!");
+    }
   } catch (err) {
-    alert("មានបញ្ហាក្នុងការ Sync៖ " + err.message);
+    console.error("Auto Sync Error:", err.message);
   }
 }

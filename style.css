@@ -148,6 +148,15 @@ input,select{font:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD1
 .per-sign{display:flex;gap:24px}
 .paper-page .g{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
+/* ===== ប័ណ្ណពិន្ទុសិស្ស ===== */
+.rc-page{margin-bottom:18px}
+.rc-info{margin:6px 0 10px;font-size:13px;text-align:center}
+.rc-table{font-size:12px}
+.rc-table td.nm{text-align:left}
+.rc-foot{display:flex;justify-content:space-between;gap:16px;margin-top:16px}
+.rc-note{margin-top:16px;font-size:12px}
+.rc-note i{display:block;border-bottom:1px dotted #000;height:22px}
+
 /* ===== Responsive ===== */
 @media(max-width:900px){
   .app{grid-template-columns:1fr}
@@ -169,4 +178,6 @@ input,select{font:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD1
   body{background:#fff}main{padding:0;max-width:none}
   .paper-page{box-shadow:none;width:auto;padding:0;overflow:visible}
   .book-page{width:auto;padding:0}
+  .rc-page{margin:0 auto;break-after:page;page-break-after:always}
+  .rc-page:last-child{break-after:auto;page-break-after:auto}
 }

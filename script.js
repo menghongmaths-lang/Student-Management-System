@@ -367,41 +367,51 @@ showTab('pDash');
 render();
 syncFromSupabase(); // ស្ទូច Data ពី Supabase នៅពេល App បើកដំបូង
 
-// ===== មុខងារ Sync Data ពី Local ទៅ Supabase (Update ថ្មី) =====
+// ===== មុខងារ Sync Data ពី LocalStorage ឬ Form ទៅ Supabase =====
 async function pushAllToSupabase() {
   alert("កំពុងបញ្ជូនទិន្នន័យទៅ Supabase... សូមរង់ចាំមួយភ្លែត!");
   try {
-    // ១. ស្វែងរក Array សិស្ស (ទោះជាឈ្មោះ S ឬ students)
-    let studentArray = (typeof S !== 'undefined' && Array.isArray(S)) ? S : 
-                       (typeof students !== 'undefined' && Array.isArray(students)) ? students : [];
+    // 1. ស្វែងរក Array សិស្សគ្រប់រូបភាពដែលមានក្នុង Script
+    let rawStudents = [];
+    if (typeof S !== 'undefined' && Array.isArray(S) && S.length > 0) {
+      rawStudents = S;
+    } else if (typeof students !== 'undefined' && Array.isArray(students) && students.length > 0) {
+      rawStudents = students;
+    } else {
+      // ប្រសិនបើ LocalStorage គ្មាន Data វានឹងទាញយកពី LocalStorage ផ្ទាល់
+      const localData = localStorage.getItem('std_data') || localStorage.getItem('students');
+      if (localData) {
+        try { rawStudents = JSON.parse(localData); } catch(e) {}
+      }
+    }
 
-    if (studentArray.length === 0) {
-      alert("មិនមានទិន្នន័យសិស្សក្នុង LocalStorage សម្រាប់ Sync ទេ!");
+    // ប្រសិនបើនៅតែគ្មានសិស្ស វានឹងប្រាប់ឱ្យបន្ថែមសិស្សជាមុនសិន
+    if (!rawStudents || rawStudents.length === 0) {
+      alert("មិនទាន់មានទិន្នន័យសិស្សក្នុងប្រព័ន្ធទេ! សូមសាកល្បងបញ្ចូលសិស្សថ្មី ១-២ នាក់តាម Form ជាមុនសិន។");
       return;
     }
 
-    // ២. រៀបចំទិន្នន័យសិស្ស ដោយបំប្លែង ID ឱ្យទៅជា Integer
-    const formattedStudents = studentArray.map((s, idx) => {
+    // 2. Format ទិន្នន័យឱ្យត្រូវ Integer ID និង Field Name
+    const formattedStudents = rawStudents.map((s, idx) => {
       let numericId = parseInt(s.id, 10);
-      if (isNaN(numericId)) numericId = idx + 1; // ប្រសិនបើ ID មិនមែនជាលេខ វានឹងបង្កើតលេខលំដាប់ 1, 2, 3...
+      if (isNaN(numericId)) numericId = idx + 1;
       return {
         id: numericId,
-        name: String(s.name || ''),
-        sex: String(s.sex || 'ប្រុស'),
-        cls: String(s.cls || s.class || '')
+        name: String(s.name || s.studentName || ''),
+        sex: String(s.sex || s.gender || 'ប្រុស'),
+        cls: String(s.cls || s.class || s.studentClass || '')
       };
     });
 
-    // ៣. Push ចូល Table students
-    const { data, error: e1 } = await _supabase.from('students').upsert(formattedStudents);
+    // 3. Upsert ចូល Table students
+    const { error: e1 } = await _supabase.from('students').upsert(formattedStudents);
     if (e1) {
-      console.error("Supabase Insert Error:", e1);
       alert("មានបញ្ហា Insert សិស្ស៖ " + e1.message);
       return;
     }
 
-    // ៤. Push ពិន្ទុ (ប្រសិនបើមាន)
-    if (typeof SC !== 'undefined') {
+    // 4. Upsert ពិន្ទុ
+    if (typeof SC !== 'undefined' && SC) {
       for (const id in SC) {
         let numId = parseInt(id, 10);
         if (!isNaN(numId)) {
@@ -412,8 +422,8 @@ async function pushAllToSupabase() {
       }
     }
 
-    // ៥. Push វត្តមាន (ប្រសិនបើមាន)
-    if (typeof AT !== 'undefined') {
+    // 5. Upsert វត្តមាន
+    if (typeof AT !== 'undefined' && AT) {
       for (const id in AT) {
         let numId = parseInt(id, 10);
         if (!isNaN(numId)) {
@@ -422,9 +432,8 @@ async function pushAllToSupabase() {
       }
     }
 
-    alert(" បញ្ជូនទិន្នន័យទៅ Supabase ជោគជ័យ ១០០%!");
+    alert("បញ្ជូនទិន្នន័យទៅ Supabase ជោគជ័យ ១០០%!");
   } catch (err) {
-    console.error("Sync Error:", err);
     alert("មានបញ្ហាក្នុងការ Sync៖ " + err.message);
   }
 }

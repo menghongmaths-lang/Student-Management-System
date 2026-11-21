@@ -37,8 +37,10 @@ $('#studentClass').innerHTML=opts;$('#studentClass').value='10B';
 $('#filterClass').innerHTML='<option value="ALL">ថ្នាក់ទាំងអស់</option>'+opts;
 $('#selMonth').innerHTML=MN.map((n,i)=>`<option value="${String(i+1).padStart(2,'0')}">${n}</option>`).join('');
 $('#selMonth').value=curM();$('#atDay').value=today();
-function fillSubj(){const v=sj(),g=G(),L=g?subsG(g):[];
-  $('#selSubj').innerHTML=`<option value="ALL">${g?'សរុបគ្រប់មុខវិជ្ជា':'ភាគរយសរុប'}</option>`+L.map(x=>`<option value="${esc(x[0])}">${esc(x[0])} (${x[1]})</option>`).join('');
+function fillSubj(){const v=sj(),g=G();let L;
+  if(g)L=subsG(g).map(x=>[x[0],` (${x[1]})`]);
+  else{const seen=new Set();L=[];Object.values(SUBJ).forEach(a=>a.forEach(x=>{if(!seen.has(x[0])){seen.add(x[0]);L.push([x[0],''])}}))}
+  $('#selSubj').innerHTML=`<option value="ALL">${g?'សរុបគ្រប់មុខវិជ្ជា':'ភាគរយសរុប'}</option>`+L.map(x=>`<option value="${esc(x[0])}">${esc(x[0])}${x[1]}</option>`).join('');
   $('#selSubj').value=L.some(x=>x[0]==v)?v:'ALL'}
 
 const sc=id=>(SC[id]||{})[mo()]||{};

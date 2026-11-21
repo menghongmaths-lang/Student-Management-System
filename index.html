@@ -19,6 +19,7 @@
     <button data-t="officialSection"><i>▤</i>តារាង A4</button>
     <button data-t="pBook"><i>▥</i>សៀវភៅពិន្ទុ</button>
     <button data-t="pPeriod"><i>◫</i>លទ្ធផលឆមាស/ឆ្នាំ</button>
+    <button data-t="pCard"><i>▣</i>ប័ណ្ណពិន្ទុសិស្ស</button>
   </nav>
   <div class="sfilter">
     <h4>តម្រង</h4>
@@ -153,6 +154,17 @@
         </div>
       </div>
     </div>
+  </div>
+  <div id="pCard" hidden>
+    <div class="off-tools">
+      <div><h2>ប័ណ្ណលទ្ធផលសិក្សារបស់សិស្ស</h2><p>ជ្រើសថ្នាក់នៅរបារខាងឆ្វេង រួចជ្រើសសិស្ស ឬ "ទាំងថ្នាក់" ដើម្បីបោះពុម្ពម្នាក់ម្ខាងក្រដាសមួយសន្លឹក។ ប្រចាំខែប្រើខែនៅរបារខាងឆ្វេង។</p></div>
+      <div class="tools">
+        <select id="rcType" onchange="renderCard()"><option value="month">ប្រចាំខែ</option><option value="s1">ប្រចាំឆមាសទី១</option><option value="s2">ប្រចាំឆមាសទី២</option><option value="year">ប្រចាំឆ្នាំ</option></select>
+        <select id="rcStu" onchange="renderCard()"></select>
+        <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
+      </div>
+    </div>
+    <div id="rcBox"></div>
   </div>
   </div>
 

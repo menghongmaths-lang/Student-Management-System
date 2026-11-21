@@ -55,13 +55,13 @@ function ranks(L){const o=L.filter(s=>val(s)!=null).sort((a,b)=>val(b)-val(a)),r
 const tot=s=>{const p=pt(s,'ALL');return p?`<b>${p.t}</b> <small>/${p.m} · ${f1(p.t/p.m*100)}%</small>`:'-'};
 
 function switchRole(r){const T=r=='teacher';isT=T;
-  $('#teacherArea').hidden=!T;$('#studentDashboard').hidden=T;$('#lblClass').hidden=!T;$('#lblSubj').hidden=!T;
+  $('#teacherArea').hidden=!T;$('#tabs').hidden=!T;$('#studentDashboard').hidden=T;$('#lblClass').hidden=!T;$('#lblSubj').hidden=!T;
   $('#btnTeacher').classList.toggle('on',T);$('#btnStudent').classList.toggle('on',!T);
   $('#headerTitle').textContent=T?'ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ និងពិន្ទុសិស្ស (សម្រាប់គ្រូបង្រៀន)':'ប្រព័ន្ធពិនិត្យមើលពិន្ទុសិក្សា (សម្រាប់សិស្សានុសិស្ស)';
   $('#headerDesc').textContent=T?'គ្រប់គ្រង បញ្ចូលពិន្ទុសិស្ស និងគណនាមធ្យមភាគដោយស្វ័យប្រវត្តិ។':'ស្វែងរក និងពិនិត្យមើលលទ្ធផលប្រឡងប្រចាំខែរបស់អ្នក។'}
-function showTab(id){['pStu','pSc','pAt','officialSection','pBook'].forEach(x=>$('#'+x).hidden=x!=id);
+function showTab(id){['pDash','pStu','pSc','pAt','officialSection','pBook'].forEach(x=>$('#'+x).hidden=x!=id);
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==id))}
-$('#tabs').onclick=e=>{if(e.target.dataset.t)showTab(e.target.dataset.t)};
+$('#tabs').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.t)showTab(b.dataset.t)};
 function render(){renderLv();fillSubj();renderGrid();renderAt();renderRest()}
 
 function renderRest(){
@@ -71,7 +71,7 @@ function renderRest(){
   const d=$('#atDay').value,mk=C.filter(s=>(AT[s.id]||{})[d]),ar=mk.length?Math.round(mk.filter(s=>AT[s.id][d]!='X').length/mk.length*100)+'%':'-';
   $('#stats').innerHTML=`<div class="stat"><span>សិស្សសរុប</span><b>${C.length}</b></div><div class="stat"><span>មធ្យមភាគ (%)</span><b>${m==null?'-':f1(m)}</b></div><div class="stat"><span>អត្រាជាប់ (≥៥០%)</span><b>${pass}</b></div><div class="stat"><span>វត្តមានថ្ងៃ ${esc(d)}</span><b>${ar}</b></div>`;
   $('#studentTableBody').innerHTML=L.length?L.map((s,i)=>{const p=pt(s),a=attMonth(s.id);return`<tr><td>${i+1}</td><td><b>${esc(s.name)}</b></td><td>${s.sex}</td><td>${s.cls}</td><td>${p?`<b>${p.t}</b><small>/${p.m}</small>`:'-'}</td><td>${badge(grade(val(s)))}</td><td>${a.X}${a.L?` <small>(យឺត ${a.L})</small>`:''}</td><td class="act"><button onclick="editStudent(${s.id})">កែ</button><button class="del" onclick="deleteStudent(${s.id})">លុប</button></td></tr>`}).join(''):'<tr><td colspan="8" class="empty">មិនទាន់មានសិស្ស</td></tr>';
-  renderOfficial(C,R);renderBook()}
+  renderOfficial(C,R);renderBook();renderDash(C)}
 
 function renderLv(){
   $('#lvTabs').innerHTML=LV.map(([k,n])=>`<button class="${k==lv?'on':''}" onclick="setLv('${k}')">${n}</button>`).join('');
@@ -117,6 +117,22 @@ function renderOfficial(C,R){
   const cnt={};GRADES.forEach(x=>cnt[x[0]]=0);C.forEach(s=>{const v=val(s);if(v!=null)cnt[grade(v)]++});
   const pair=x=>`<td class="gr">${x}</td><td>ចំនួន</td><td>${kh(cnt[x])}</td><td>នាក់</td>`;
   $('#sumTable').innerHTML=[['A','D'],['B','E'],['C','F']].map(p=>`<tr>${pair(p[0])}${pair(p[1])}</tr>`).join('')}
+
+// ===== ផ្ទាំងគ្រប់គ្រង (Dashboard) =====
+function renderDash(C){
+  const GC={A:'#2FA66F',B:'#3B82D6',C:'#6B63D6',D:'#D9A21B',E:'#E57C3A',F:'#D64545'};
+  const none='<p class="empty">មិនទាន់មានពិន្ទុ</p>';
+  const bar=(l,p,t,c)=>`<div class="br"><span>${l}</span><div class="bt"><i style="width:${Math.min(100,Math.max(0,p))}%;background:${c}"></i></div><b>${t}</b></div>`;
+  const cnt={};GRADES.forEach(x=>cnt[x[0]]=0);C.forEach(s=>{const v=val(s);if(v!=null)cnt[grade(v)]++});
+  const mxc=Math.max(1,...Object.values(cnt));
+  $('#dGrades').innerHTML=GRADES.map(([g])=>bar(g,cnt[g]/mxc*100,cnt[g]+' នាក់',GC[g])).join('');
+  const rows=CLASSES.map(c=>{const V=S.filter(s=>s.cls==c).map(s=>val(s)).filter(v=>v!=null);return V.length?[c,V.reduce((a,b)=>a+b,0)/V.length]:null}).filter(Boolean);
+  $('#dClass').innerHTML=rows.length?rows.map(([c,a])=>bar(c,a,f1(a)+'%',a>=50?'#3B82D6':'#D64545')).join(''):none;
+  const T=C.filter(s=>val(s)!=null).sort((a,b)=>val(b)-val(a)).slice(0,5);
+  $('#dTop').innerHTML=T.length?'<ol class="top5">'+T.map(s=>`<li><span><b>${esc(s.name)}</b><small>ថ្នាក់ ${s.cls}</small></span><em>${f1(val(s))}%</em></li>`).join('')+'</ol>':none;
+  const d=$('#atDay').value,c={P:0,L:0,X:0,N:0};C.forEach(s=>c[(AT[s.id]||{})[d]||'N']++);
+  const n=C.length||1,AC={P:'#17795A',L:'#B7791F',X:'#B42318'};
+  $('#dAtt').innerHTML=`<p class="hint">ថ្ងៃទី ${esc(d)}</p><div class="abar">${Object.keys(AC).map(k=>`<i style="width:${c[k]/n*100}%;background:${AC[k]}"></i>`).join('')}</div><div class="chips" style="margin-top:12px"><span class="chip">មក ${c.P}</span><span class="chip">យឺត ${c.L}</span><span class="chip">អវត្តមាន ${c.X}</span><span class="chip">មិនទាន់កត់ត្រា ${c.N}</span></div>`}
 
 // ===== សៀវភៅពិន្ទុប្រចាំខែ (A4 ផ្ដេក) =====
 function renderBook(){
@@ -188,4 +204,4 @@ function exportToExcel(){const C=inCls(),R=ranks(C),g=G();
 
 function resetSubj(){const g=lv;if(!confirm('ស្ដារមុខវិជ្ជា និងពិន្ទុអតិបរមាតាមរបបផ្លូវការ?'))return;SUBJ[g]=cp(OFF[g]);save();render()}
 
-switchRole('teacher');showTab('pStu');render();
+switchRole('teacher');showTab('pDash');render();

@@ -6,31 +6,44 @@
 <title>ប្រព័ន្ធគ្រប់គ្រងសិស្ស</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;700&family=Moul&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header class="bar">
+<div class="app">
+<aside class="side">
   <div class="brand"><b>វិទ្យាល័យសាន់នីវូសំរោងធំ</b><span>ប្រព័ន្ធគ្រប់គ្រងសិស្ស</span></div>
-  <div class="roles" role="group" aria-label="តួនាទី">
-    <button id="btnTeacher" class="on" onclick="switchRole('teacher')">គ្រូបង្រៀន</button>
-    <button id="btnStudent" onclick="switchRole('student')">សិស្ស</button>
-  </div>
-</header>
-
-<main>
-  <section class="hero">
-    <div><h1 id="headerTitle"></h1><p id="headerDesc"></p></div>
-    <div class="math">$$\bar{X}=\frac{\sum_{j} X_j}{n}$$</div>
-  </section>
-  <div class="ctrl">
+  <nav class="snav" id="tabs">
+    <button data-t="pDash" class="on"><i>▦</i>ផ្ទាំងគ្រប់គ្រង</button>
+    <button data-t="pStu"><i>☺</i>សិស្ស</button>
+    <button data-t="pSc"><i>✎</i>ពិន្ទុតាមខែ</button>
+    <button data-t="pAt"><i>✓</i>វត្តមាន</button>
+    <button data-t="officialSection"><i>▤</i>តារាង A4</button>
+    <button data-t="pBook"><i>▥</i>សៀវភៅពិន្ទុ</button>
+  </nav>
+  <div class="sfilter">
+    <h4>តម្រង</h4>
     <label id="lblClass">ថ្នាក់<select id="filterClass" onchange="render()"></select></label>
     <label>ខែ<select id="selMonth" onchange="render()"></select></label>
     <label id="lblSubj">មុខវិជ្ជា<select id="selSubj" onchange="renderRest()"></select></label>
   </div>
+  <div class="roles" role="group" aria-label="តួនាទី">
+    <button id="btnTeacher" class="on" onclick="switchRole('teacher')">គ្រូបង្រៀន</button>
+    <button id="btnStudent" onclick="switchRole('student')">សិស្ស</button>
+  </div>
+</aside>
+
+<main>
+  <header class="top"><div><h1 id="headerTitle"></h1><p id="headerDesc"></p></div><div class="fx">X̄ = ΣXⱼ / n</div></header>
 
   <div id="teacherArea">
-    <div class="stats" id="stats"></div>
-    <nav class="tabs" id="tabs"><button data-t="pStu" class="on">សិស្ស</button><button data-t="pSc">ពិន្ទុតាមខែ</button><button data-t="pAt">វត្តមាន</button><button data-t="officialSection">តារាង A4</button><button data-t="pBook">សៀវភៅពិន្ទុ</button></nav>
+    <div id="pDash">
+      <div class="stats" id="stats"></div>
+      <div class="dgrid">
+        <div class="card"><h2>ការបែងចែកនិទ្ទេស</h2><div id="dGrades"></div></div>
+        <div class="card"><h2>មធ្យមភាគតាមថ្នាក់ (%)</h2><div id="dClass"></div></div>
+        <div class="card"><h2>សិស្សពូកែ ៥ នាក់ដំបូង</h2><div id="dTop"></div></div>
+        <div class="card"><h2>វត្តមាន</h2><div id="dAtt"></div></div>
+      </div>
+    </div>
 
     <div id="pStu">
       <div class="card">
@@ -127,6 +140,7 @@
     </div>
   </div>
 </main>
+</div>
 <script src="script.js"></script>
 </body>
 </html>

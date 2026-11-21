@@ -13,6 +13,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const kh=n=>String(n).replace(/\d/g,d=>'០១២៣៤៥៦៧៨៩'[d]);
 const f1=v=>Math.round(v*10)/10;
+const coef=mx=>Math.round(mx/50*100)/100; // មេគុណ = ពិន្ទុអតិបរមា ÷ ៥០ ; មធ្យមភាគ = ពិន្ទុសរុប ÷ មេគុណសរុប
 const grade=v=>v==null?'-':GRADES.find(g=>v>=g[1])[0];
 const badge=g=>g=='-'?'-':`<span class="g g${g}">${g}</span>`;
 const curM=()=>String(new Date().getMonth()+1).padStart(2,'0');
@@ -53,7 +54,7 @@ function attMonth(id){const c={P:0,L:0,X:0};Object.entries(AT[id]||{}).forEach((
 const inCls=()=>S.filter(s=>cls()=='ALL'||s.cls==cls());
 function ranks(L){const o=L.filter(s=>val(s)!=null).sort((a,b)=>val(b)-val(a)),r={};
   o.forEach((s,i)=>r[s.id]=i&&val(s)==val(o[i-1])?r[o[i-1].id]:i+1);return r}
-const tot=s=>{const p=pt(s,'ALL');return p?`<b>${p.t}</b> <small>/${p.m} · ${f1(p.t/p.m*100)}%</small>`:'-'};
+const tot=s=>{const p=pt(s,'ALL');return p?`<b>${p.t}</b> <small>/${p.m} · ${f1(p.t/p.m*100)}% · ម.ភាគ ${(p.t*50/p.m).toFixed(2)}</small>`:'-'};
 
 function switchRole(r){const T=r=='teacher';isT=T;
   $('#teacherArea').hidden=!T;$('#tabs').hidden=!T;$('#studentDashboard').hidden=T;$('#lblClass').hidden=!T;$('#lblSubj').hidden=!T;
@@ -84,8 +85,8 @@ function setLv(k){lv=k;renderLv();renderGrid()}
 function setCT(c,v){CT[c]=v;save();render()}
 function renderGrid(){const L=subsG(lv),T=L.reduce((a,x)=>a+x[1],0),cs=$('#scClass').value;
   const C=S.filter(s=>kOf(s.cls)==lv&&(cs=='ALL'||s.cls==cs));
-  $('#subjChips').innerHTML=L.map(([j,mx],k)=>`<span class="chip">${esc(j)} · ${mx}<button onclick="rmSubject(${k})" aria-label="លុប">✕</button></span>`).join('')+`<span class="chip"><b>ពិន្ទុសរុប ${T}</b></span>`;
-  $('#scHead').innerHTML=`<tr><th>#</th><th>ឈ្មោះ</th><th>ថ្នាក់</th>${L.map(([j,mx])=>`<th>${esc(j)}<br><small>/${mx}</small></th>`).join('')}<th>សរុប</th></tr>`;
+  $('#subjChips').innerHTML=L.map(([j,mx],k)=>`<span class="chip">${esc(j)} · ${mx} <small>(មេគុណ ${coef(mx)})</small><button onclick="rmSubject(${k})" aria-label="លុប">✕</button></span>`).join('')+`<span class="chip"><b>ពិន្ទុសរុប ${T} · មេគុណសរុប ${coef(T)}</b></span>`;
+  $('#scHead').innerHTML=`<tr><th>#</th><th>ឈ្មោះ</th><th>ថ្នាក់</th>${L.map(([j,mx])=>`<th>${esc(j)}<br><small>/${mx} · ×${coef(mx)}</small></th>`).join('')}<th>សរុប</th></tr>`;
   const none=CLASSES.some(c=>kOf(c)==lv)?'មិនមានសិស្សក្នុងកម្រិតនេះ':'មិនមានថ្នាក់ណាក្នុងកម្រិតនេះ — សូមកំណត់ឆាក់នៅខាងលើ';
   $('#scBody').innerHTML=C.length?C.map((s,i)=>{const o=sc(s.id);return`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${s.cls}</td>${L.map(([j,mx],k)=>`<td><input class="num" type="number" min="0" max="${mx}" value="${o[j]??''}" onchange="setScore(${s.id},${k},this)"></td>`).join('')}<td id="av${s.id}">${tot(s)}</td></tr>`}).join(''):`<tr><td colspan="${L.length+4}" class="empty">${none}</td></tr>`}
 function setScore(id,k,el){const [j,mx]=subsG(lv)[k],o=((SC[id]??={})[mo()]??={});
@@ -139,7 +140,7 @@ function renderDash(C){
 const avgOf=a=>a.reduce((x,y)=>x+y,0)/a.length;
 const monthRes=(s,m)=>{const o=(SC[s.id]||{})[m]||{};let t=0,mx=0,n=0;
   subs(s).forEach(([j,x])=>{if(typeof o[j]=='number'){t+=o[j];mx+=x;n++}});
-  return n?{t,m:mx,pct:t/mx*100,avg:t/n}:null};
+  return n?{t,m:mx,pct:t/mx*100,avg:t*50/mx}:null};
 const combine=L=>L.length?{t:avgOf(L.map(x=>x.t)),m:avgOf(L.map(x=>x.m)),pct:avgOf(L.map(x=>x.pct)),avg:avgOf(L.map(x=>x.avg))}:null;
 const semMonths=k=>Object.keys(SEM).filter(m=>SEM[m]==k).sort();
 const semRes=(s,k)=>combine(semMonths(k).map(m=>monthRes(s,m)).filter(Boolean));
@@ -183,7 +184,7 @@ const semSc=(s,k,j)=>meanOf(semMonths(k).map(m=>monthSc(s,m,j)));
 const perSc=(s,T,j)=>T=='month'?monthSc(s,mo(),j):T=='s1'?semSc(s,1,j):T=='s2'?semSc(s,2,j):meanOf([semSc(s,1,j),semSc(s,2,j)]);
 function cardRes(s,T){let t=0,m=0,n=0;
   const rows=subs(s).map(([j,mx])=>{const v=perSc(s,T,j);if(v!=null){t+=v;m+=mx;n++}return{j,mx,v}});
-  return n?{rows,t,m,n,pct:t/m*100,avg:t/n,mavg:m/n}:{rows,n:0}}
+  return n?{rows,t,m,n,pct:t/m*100,avg:t*50/m,mavg:50}:{rows,n:0}}
 function cardRank(s,T){const me=cardRes(s,T);if(!me.n)return null;
   return 1+S.filter(x=>x.cls==s.cls).filter(x=>{const r=cardRes(x,T);return r.n&&r.pct>me.pct}).length}
 function attPer(id,T){
@@ -224,7 +225,7 @@ function renderBook(){
   const rows=C.map(s=>{
     const o=sc(s.id),p=pt(s,'ALL'),a=attMonth(s.id);
     const n=L.filter(([j])=>typeof o[j]=='number').length;
-    return{s,o,p,a,pct:p?p.t/p.m*100:null,avg:p&&n?p.t/n:null}});
+    return{s,o,p,a,pct:p?p.t/p.m*100:null,avg:p?p.t*50/p.m:null}});
   const ord=rows.filter(r=>r.pct!=null).sort((a,b)=>b.pct-a.pct);
   ord.forEach((r,i)=>r.rank=i&&r.pct==ord[i-1].pct?ord[i-1].rank:i+1);
 

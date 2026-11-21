@@ -1,6 +1,6 @@
 // ===== 1. SUPABASE CONFIGURATION =====
-const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co'; // សូមដូរជា Project URL របស់លោកគ្រូ
-const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';             // សូមដូរជា Anon Key របស់លោកគ្រូ
+const SUPABASE_URL = 'https://pqtzhbpdgsqqgejxzpho.supabase.co/rest/v1/.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_veLllK4Ar1C0RT_wu4S6ng_XHsAfDKD'; // ប្រើ Publishable Key ត្រង់នេះ
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ===== 2. CONSTANTS & CONFIGURATIONS =====

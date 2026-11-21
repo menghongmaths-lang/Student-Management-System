@@ -56,37 +56,41 @@
           <label>ឈ្មោះសិស្ស<input type="text" id="studentName" required></label>
           <label>ភេទ<select id="studentGender"><option>ប្រុស</option><option>ស្រី</option></select></label>
           <label>ថ្នាក់<select id="studentClass" required></select></label>
-          <div class="fact"><button class="btn" id="saveBtn">បន្ថែមសិស្ស</button><button type="button" class="btn ghost" id="cancelBtn" hidden onclick="resetForm()">បោះបង់</button></div>
+          <div class="fact">
+            <button class="btn" id="saveBtn">បន្ថែមសិស្ស</button>
+            <button type="button" class="btn ghost" id="cancelBtn" hidden onclick="resetForm()">បោះបង់</button>
+          </div>
         </form>
       </div>
+
       <div id="listCard" class="card">
-  <div class="lhead">
-    <h2>បញ្ជីឈ្មោះ និងលទ្ធផលសិក្សា</h2>
-    <div class="tools">
-      <input type="search" id="q" placeholder="ស្វែងរកឈ្មោះ..." oninput="renderRest()">
-      <button class="btn green" onclick="exportToExcel()">ទាញយក CSV</button>
-      <!-- ដាក់ប៊ូតុង Sync នៅទីនេះ (ខាងក្នុង div class="tools") -->
-      <button class="btn" style="background:#4f46e5" onclick="pushAllToSupabase()">Sync ទៅ Supabase</button>
+        <div class="lhead">
+          <h2>បញ្ជីឈ្មោះ និងលទ្ធផលសិក្សា</h2>
+          <div class="tools">
+            <input type="search" id="q" placeholder="ស្វែងរកឈ្មោះ..." oninput="renderRest()">
+            <button class="btn green" onclick="exportToExcel()">ទាញយក CSV</button>
+            <button class="btn" style="background:#4f46e5" onclick="pushAllToSupabase()">Sync ទៅ Supabase</button>
+          </div>
+        </div>
+        <div class="tw">
+          <table class="std-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>ឈ្មោះសិស្ស</th>
+                <th>ភេទ</th>
+                <th>ថ្នាក់</th>
+                <th>ពិន្ទុ</th>
+                <th>និទ្ទេស</th>
+                <th>អវត្តមាន (ខែ)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="tw">
-    <table class="std-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>ឈ្មោះសិស្ស</th>
-          <th>ភេទ</th>
-          <th>ថ្នាក់</th>
-          <th>ពិន្ទុ</th>
-          <th>និទ្ទេស</th>
-          <th>អវត្តមាន (ខែ)</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="studentTableBody"></tbody>
-    </table>
-  </div>
-</div>
 
     <div id="pSc" class="card" hidden>
       <div class="lhead"><h2>បញ្ចូលពិន្ទុតាមខែ</h2>
@@ -99,95 +103,98 @@
     </div>
 
     <div id="pAt" class="card" hidden>
-      <div class="lhead"><h2>កត់ត្រាវត្តមាន</h2>
+      <div class="lhead"><h2>កត់ត្រាវវត្តមាន</h2>
         <div class="tools"><input type="date" id="atDay" onchange="renderAt();renderRest()"><button class="btn ghost" onclick="allPresent()">មកគ្រប់គ្នា</button></div></div>
       <div class="chips" id="atStats"></div>
       <div class="tw"><table class="std-table"><thead><tr><th>#</th><th>ឈ្មោះ</th><th>ស្ថានភាព</th><th>សរុបក្នុងខែ</th></tr></thead><tbody id="atBody"></tbody></table></div>
     </div>
-    <section id="officialSection">
-    <div class="off-tools">
-      <div><h2>តារាងលទ្ធផលផ្លូវការ (A4)</h2><p>ធ្វើបច្ចុប្បន្នភាពដោយស្វ័យប្រវត្តិតាមថ្នាក់ដែលបានជ្រើស។</p></div>
-      <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
-    </div>
-    <div class="paper-page">
-      <div class="header-top">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-      <div class="school-name">វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
-      <div class="doc-title">
-        <h2 id="officialDocClass"></h2>
-        <h3 id="officialSubj"></h3>
-      </div>
-      <table class="score-table"><thead id="officialHead"></thead><tbody id="officialTableBody"></tbody></table>
-      <div class="footer-section">
-        <table class="summary-table" id="sumTable"></table>
-        <div class="signature-block">
-          <div>ថ្ងៃទី...........ខែ <span id="offMonth"></span> ឆ្នាំ២០២៦</div>
-          <div class="role-title">អ្នកស្រង់ពិន្ទុ</div>
-          <div class="name-line">អាន ម៉េងហុង</div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <div id="pBook" hidden>
-    <div class="off-tools">
-      <div><h2>សៀវភៅពិន្ទុប្រចាំខែ (A4 ផ្ដេក)</h2><p>ជ្រើសថ្នាក់ និងខែនៅខាងលើ។ ពេលបោះពុម្ព សូមជ្រើស Landscape ប្រសិនបើ browser មិនជ្រើសស្វ័យប្រវត្តិ។</p></div>
-      <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
-    </div>
-    <p id="bkEmpty" class="empty" hidden>សូមជ្រើសថ្នាក់មួយនៅប្រអប់ "ថ្នាក់" ខាងលើ (មិនមែន "ថ្នាក់ទាំងអស់")</p>
-    <div class="paper-page book-page" id="bkPaper">
-      <div class="bk-top">
-        <div class="bk-l" contenteditable="true">មន្ទីរអប់រំ យុវជន និង កីឡាខេត្តកណ្ដាល<br>ការិយាល័យអប់រំ យុវជន និង កីឡាស្រុកកៀនស្វាយ<br>វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
-        <div class="bk-r">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-      </div>
-      <div class="doc-title"><h2 id="bkTitle"></h2></div>
-      <div class="tw"><table class="score-table bk-table" id="bkTable"></table></div>
-      <div class="bk-foot">
-        <div>
-          <div id="bkStat" class="bk-stat"></div>
-          <div class="signature-block" contenteditable="true" style="margin-top:30px">បានឃើញ និងឯកភាព<br>ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>នាយកវិទ្យាល័យ</b></div>
-        </div>
-        <table class="summary-table bk-matrix" id="bkMatrix"></table>
-        <div class="signature-block" contenteditable="true">ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>គ្រូទទួលបន្ទុកថ្នាក់</b><div class="name-line">ឈ្មោះគ្រូ</div></div>
-      </div>
-    </div>
-  </div>
-  <div id="pPeriod" hidden>
-    <div class="off-tools">
-      <div><h2>លទ្ធផលប្រចាំខែ / ឆមាស / ឆ្នាំ</h2><p>ជ្រើសថ្នាក់ (និងខែ ប្រសិនបើជាលទ្ធផលប្រចាំខែ) នៅរបារខាងឆ្វេង។ និទ្ទេស A-F គណនាតាមភាគរយ។</p></div>
-      <div class="tools">
-        <select id="perType" onchange="renderPeriod()"><option value="month">ប្រចាំខែ (តាមខែដែលបានជ្រើស)</option><option value="s1">ប្រចាំឆមាសទី១</option><option value="s2">ប្រចាំឆមាសទី២</option><option value="year">ប្រចាំឆ្នាំ</option></select>
+    <section id="officialSection">
+      <div class="off-tools">
+        <div><h2>តារាងលទ្ធផលផ្លូវការ (A4)</h2><p>ធ្វើបច្ចុប្បន្នភាពដោយស្វ័យប្រវត្តិតាមថ្នាក់ដែលបានជ្រើស។</p></div>
         <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
       </div>
-    </div>
-    <details class="trk"><summary>កំណត់ខែដែលរាប់ក្នុងឆមាសនីមួយៗ</summary><p class="hint" style="margin-top:8px">ឆមាស = មធ្យមភាគនៃខែដែលមានពិន្ទុ។ ឆ្នាំ = មធ្យមភាគនៃឆមាសទី១ និងទី២។</p><div class="trkgrid" id="semBox"></div></details>
-    <p id="perEmpty" class="empty" hidden>សូមជ្រើសថ្នាក់មួយនៅប្រអប់ "ថ្នាក់" ខាងឆ្វេង (មិនមែន "ថ្នាក់ទាំងអស់")</p>
-    <div class="paper-page" id="perPaper">
-      <div class="bk-top">
-        <div class="bk-l" contenteditable="true">មន្ទីរអប់រំ យុវជន និង កីឡាខេត្តកណ្ដាល<br>ការិយាល័យអប់រំ យុវជន និង កីឡាស្រុកកៀនស្វាយ<br>វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
-        <div class="bk-r">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+      <div class="paper-page">
+        <div class="header-top">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+        <div class="school-name">វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
+        <div class="doc-title">
+          <h2 id="officialDocClass"></h2>
+          <h3 id="officialSubj"></h3>
+        </div>
+        <table class="score-table"><thead id="officialHead"></thead><tbody id="officialTableBody"></tbody></table>
+        <div class="footer-section">
+          <table class="summary-table" id="sumTable"></table>
+          <div class="signature-block">
+            <div>ថ្ងៃទី...........ខែ <span id="offMonth"></span> ឆ្នាំ២០២៦</div>
+            <div class="role-title">អ្នកស្រង់ពិន្ទុ</div>
+            <div class="name-line">អាន ម៉េងហុង</div>
+          </div>
+        </div>
       </div>
-      <div class="doc-title"><h2 id="perTitle"></h2><h3 id="perClass"></h3></div>
-      <table class="score-table per-table"><thead id="perHead"></thead><tbody id="perBody"></tbody></table>
-      <div class="per-foot">
-        <div id="perStat" class="bk-stat"></div>
-        <div class="per-sign">
-          <div class="signature-block" contenteditable="true">បានឃើញ និងឯកភាព<br>ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>នាយកវិទ្យាល័យ</b></div>
+    </section>
+
+    <div id="pBook" hidden>
+      <div class="off-tools">
+        <div><h2>សៀវភៅពិន្ទុប្រចាំខែ (A4 ផ្ដេក)</h2><p>ជ្រើសថ្នាក់ និងខែនៅខាងលើ។ ពេលបោះពុម្ព សូមជ្រើស Landscape ប្រសិនបើ browser មិនជ្រើសស្វ័យប្រវត្តិ។</p></div>
+        <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
+      </div>
+      <p id="bkEmpty" class="empty" hidden>សូមជ្រើសថ្នាក់មួយនៅប្រអប់ "ថ្នាក់" ខាងលើ (មិនមែន "ថ្នាក់ទាំងអស់")</p>
+      <div class="paper-page book-page" id="bkPaper">
+        <div class="bk-top">
+          <div class="bk-l" contenteditable="true">មន្ទីរអប់រំ យុវជន និង កីឡាខេត្តកណ្ដាល<br>ការិយាល័យអប់រំ យុវជន និង កីឡាស្រុកកៀនស្វាយ<br>វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
+          <div class="bk-r">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+        </div>
+        <div class="doc-title"><h2 id="bkTitle"></h2></div>
+        <div class="tw"><table class="score-table bk-table" id="bkTable"></table></div>
+        <div class="bk-foot">
+          <div>
+            <div id="bkStat" class="bk-stat"></div>
+            <div class="signature-block" contenteditable="true" style="margin-top:30px">បានឃើញ និងឯកភាព<br>ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>នាយកវិទ្យាល័យ</b></div>
+          </div>
+          <table class="summary-table bk-matrix" id="bkMatrix"></table>
           <div class="signature-block" contenteditable="true">ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>គ្រូទទួលបន្ទុកថ្នាក់</b><div class="name-line">ឈ្មោះគ្រូ</div></div>
         </div>
       </div>
     </div>
-  </div>
-  <div id="pCard" hidden>
-    <div class="off-tools">
-      <div><h2>ប័ណ្ណលទ្ធផលសិក្សារបស់សិស្ស</h2><p>ជ្រើសថ្នាក់នៅរបារខាងឆ្វេង រួចជ្រើសសិស្ស ឬ "ទាំងថ្នាក់" ដើម្បីបោះពុម្ពម្នាក់ម្ខាងក្រដាសមួយសន្លឹក។ ប្រចាំខែប្រើខែនៅរបារខាងឆ្វេង។</p></div>
-      <div class="tools">
-        <select id="rcType" onchange="renderCard()"><option value="month">ប្រចាំខែ</option><option value="s1">ប្រចាំឆមាសទី១</option><option value="s2">ប្រចាំឆមាសទី២</option><option value="year">ប្រចាំឆ្នាំ</option></select>
-        <select id="rcStu" onchange="renderCard()"></select>
-        <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
+
+    <div id="pPeriod" hidden>
+      <div class="off-tools">
+        <div><h2>លទ្ធផលប្រចាំខែ / ឆមាស / ឆ្នាំ</h2><p>ជ្រើសថ្នាក់ (និងខែ ប្រសិនបើជាលទ្ធផលប្រចាំខែ) នៅរបារខាងឆ្វេង។ និទ្ទេស A-F គណនាតាមភាគរយ។</p></div>
+        <div class="tools">
+          <select id="perType" onchange="renderPeriod()"><option value="month">ប្រចាំខែ (តាមខែដែលបានជ្រើស)</option><option value="s1">ប្រចាំឆមាសទី១</option><option value="s2">ប្រចាំឆមាសទី២</option><option value="year">ប្រចាំឆ្នាំ</option></select>
+          <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
+        </div>
+      </div>
+      <details class="trk"><summary>កំណត់ខែដែលរាប់ក្នុងឆមាសនីមួយៗ</summary><p class="hint" style="margin-top:8px">ឆមាស = មធ្យមភាគនៃខែដែលមានពិន្ទុ។ ឆ្នាំ = មធ្យមភាគនៃឆមាសទី១ និងទី២។</p><div class="trkgrid" id="semBox"></div></details>
+      <p id="perEmpty" class="empty" hidden>សូមជ្រើសថ្នាក់មួយនៅប្រអប់ "ថ្នាក់" ខាងឆ្វេង (មិនមែន "ថ្នាក់ទាំងអស់")</p>
+      <div class="paper-page" id="perPaper">
+        <div class="bk-top">
+          <div class="bk-l" contenteditable="true">មន្ទីរអប់រំ យុវជន និង កីឡាខេត្តកណ្ដាល<br>ការិយាល័យអប់រំ យុវជន និង កីឡាស្រុកកៀនស្វាយ<br>វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
+          <div class="bk-r">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+        </div>
+        <div class="doc-title"><h2 id="perTitle"></h2><h3 id="perClass"></h3></div>
+        <table class="score-table per-table"><thead id="perHead"></thead><tbody id="perBody"></tbody></table>
+        <div class="per-foot">
+          <div id="perStat" class="bk-stat"></div>
+          <div class="per-sign">
+            <div class="signature-block" contenteditable="true">បានឃើញ និងឯកភាព<br>ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>នាយកវិទ្យាល័យ</b></div>
+            <div class="signature-block" contenteditable="true">ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>គ្រូទទួលបន្ទុកថ្នាក់</b><div class="name-line">ឈ្មោះគ្រូ</div></div>
+          </div>
+        </div>
       </div>
     </div>
-    <div id="rcBox"></div>
-  </div>
+
+    <div id="pCard" hidden>
+      <div class="off-tools">
+        <div><h2>ប័ណ្ណលទ្ធផលសិក្សារបស់សិស្ស</h2><p>ជ្រើសថ្នាក់នៅរបារខាងឆ្វេង រួចជ្រើសសិស្ស ឬ "ទាំងថ្នាក់" ដើម្បីបោះពុម្ពម្នាក់ម្ខាងក្រដាសមួយសន្លឹក។ ប្រចាំខែប្រើខែនៅរបារខាងឆ្វេង។</p></div>
+        <div class="tools">
+          <select id="rcType" onchange="renderCard()"><option value="month">ប្រចាំខែ</option><option value="s1">ប្រចាំឆមាសទី១</option><option value="s2">ប្រចាំឆមាសទី២</option><option value="year">ប្រចាំឆ្នាំ</option></select>
+          <select id="rcStu" onchange="renderCard()"></select>
+          <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
+        </div>
+      </div>
+      <div id="rcBox"></div>
+    </div>
   </div>
 
   <div id="studentDashboard" hidden>

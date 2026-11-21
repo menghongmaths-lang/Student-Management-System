@@ -18,6 +18,7 @@
     <button data-t="pAt"><i>✓</i>វត្តមាន</button>
     <button data-t="officialSection"><i>▤</i>តារាង A4</button>
     <button data-t="pBook"><i>▥</i>សៀវភៅពិន្ទុ</button>
+    <button data-t="pPeriod"><i>◫</i>លទ្ធផលឆមាស/ឆ្នាំ</button>
   </nav>
   <div class="sfilter">
     <h4>តម្រង</h4>
@@ -124,6 +125,32 @@
         </div>
         <table class="summary-table bk-matrix" id="bkMatrix"></table>
         <div class="signature-block" contenteditable="true">ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>គ្រូទទួលបន្ទុកថ្នាក់</b><div class="name-line">ឈ្មោះគ្រូ</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="pPeriod" hidden>
+    <div class="off-tools">
+      <div><h2>លទ្ធផលប្រចាំខែ / ឆមាស / ឆ្នាំ</h2><p>ជ្រើសថ្នាក់ (និងខែ ប្រសិនបើជាលទ្ធផលប្រចាំខែ) នៅរបារខាងឆ្វេង។ និទ្ទេស A-F គណនាតាមភាគរយ។</p></div>
+      <div class="tools">
+        <select id="perType" onchange="renderPeriod()"><option value="month">ប្រចាំខែ (តាមខែដែលបានជ្រើស)</option><option value="s1">ប្រចាំឆមាសទី១</option><option value="s2">ប្រចាំឆមាសទី២</option><option value="year">ប្រចាំឆ្នាំ</option></select>
+        <button class="btn" onclick="window.print()">បោះពុម្ព / រក្សាទុកជា PDF</button>
+      </div>
+    </div>
+    <details class="trk"><summary>កំណត់ខែដែលរាប់ក្នុងឆមាសនីមួយៗ</summary><p class="hint" style="margin-top:8px">ឆមាស = មធ្យមភាគនៃខែដែលមានពិន្ទុ។ ឆ្នាំ = មធ្យមភាគនៃឆមាសទី១ និងទី២។</p><div class="trkgrid" id="semBox"></div></details>
+    <p id="perEmpty" class="empty" hidden>សូមជ្រើសថ្នាក់មួយនៅប្រអប់ "ថ្នាក់" ខាងឆ្វេង (មិនមែន "ថ្នាក់ទាំងអស់")</p>
+    <div class="paper-page" id="perPaper">
+      <div class="bk-top">
+        <div class="bk-l" contenteditable="true">មន្ទីរអប់រំ យុវជន និង កីឡាខេត្តកណ្ដាល<br>ការិយាល័យអប់រំ យុវជន និង កីឡាស្រុកកៀនស្វាយ<br>វិទ្យាល័យសាន់នីវូសំរោងធំ</div>
+        <div class="bk-r">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+      </div>
+      <div class="doc-title"><h2 id="perTitle"></h2><h3 id="perClass"></h3></div>
+      <table class="score-table per-table"><thead id="perHead"></thead><tbody id="perBody"></tbody></table>
+      <div class="per-foot">
+        <div id="perStat" class="bk-stat"></div>
+        <div class="per-sign">
+          <div class="signature-block" contenteditable="true">បានឃើញ និងឯកភាព<br>ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>នាយកវិទ្យាល័យ</b></div>
+          <div class="signature-block" contenteditable="true">ថ្ងៃទី.......ខែ.......ឆ្នាំ........<br><b>គ្រូទទួលបន្ទុកថ្នាក់</b><div class="name-line">ឈ្មោះគ្រូ</div></div>
+        </div>
       </div>
     </div>
   </div>

@@ -367,32 +367,64 @@ showTab('pDash');
 render();
 syncFromSupabase(); // ស្ទូច Data ពី Supabase នៅពេល App បើកដំបូង
 
-// ===== មុខងារ Sync Data ទាំងអស់ពី Local ទៅ Supabase តាមប៊ូតុង =====
+// ===== មុខងារ Sync Data ពី Local ទៅ Supabase (Update ថ្មី) =====
 async function pushAllToSupabase() {
   alert("កំពុងបញ្ជូនទិន្នន័យទៅ Supabase... សូមរង់ចាំមួយភ្លែត!");
   try {
-    // 1. Push សិស្ស
-    if (S && S.length > 0) {
-      const { error: e1 } = await _supabase.from('students').upsert(
-        S.map(s => ({ id: s.id, name: s.name, sex: s.sex, cls: s.cls }))
-      );
-      if (e1) console.error("Error Students:", e1);
+    // ១. ស្វែងរក Array សិស្ស (ទោះជាឈ្មោះ S ឬ students)
+    let studentArray = (typeof S !== 'undefined' && Array.isArray(S)) ? S : 
+                       (typeof students !== 'undefined' && Array.isArray(students)) ? students : [];
+
+    if (studentArray.length === 0) {
+      alert("មិនមានទិន្នន័យសិស្សក្នុង LocalStorage សម្រាប់ Sync ទេ!");
+      return;
     }
 
-    // 2. Push ពិន្ទុ
-    for (const id in SC) {
-      for (const m in SC[id]) {
-        await _supabase.from('scores_data').upsert({ student_id: +id, month: m, scores: SC[id][m] });
+    // ២. រៀបចំទិន្នន័យសិស្ស ដោយបំប្លែង ID ឱ្យទៅជា Integer
+    const formattedStudents = studentArray.map((s, idx) => {
+      let numericId = parseInt(s.id, 10);
+      if (isNaN(numericId)) numericId = idx + 1; // ប្រសិនបើ ID មិនមែនជាលេខ វានឹងបង្កើតលេខលំដាប់ 1, 2, 3...
+      return {
+        id: numericId,
+        name: String(s.name || ''),
+        sex: String(s.sex || 'ប្រុស'),
+        cls: String(s.cls || s.class || '')
+      };
+    });
+
+    // ៣. Push ចូល Table students
+    const { data, error: e1 } = await _supabase.from('students').upsert(formattedStudents);
+    if (e1) {
+      console.error("Supabase Insert Error:", e1);
+      alert("មានបញ្ហា Insert សិស្ស៖ " + e1.message);
+      return;
+    }
+
+    // ៤. Push ពិន្ទុ (ប្រសិនបើមាន)
+    if (typeof SC !== 'undefined') {
+      for (const id in SC) {
+        let numId = parseInt(id, 10);
+        if (!isNaN(numId)) {
+          for (const m in SC[id]) {
+            await _supabase.from('scores_data').upsert({ student_id: numId, month: m, scores: SC[id][m] });
+          }
+        }
       }
     }
 
-    // 3. Push វត្តមាន
-    for (const id in AT) {
-      await _supabase.from('attendance_data').upsert({ student_id: +id, attendance: AT[id] });
+    // ៥. Push វត្តមាន (ប្រសិនបើមាន)
+    if (typeof AT !== 'undefined') {
+      for (const id in AT) {
+        let numId = parseInt(id, 10);
+        if (!isNaN(numId)) {
+          await _supabase.from('attendance_data').upsert({ student_id: numId, attendance: AT[id] });
+        }
+      }
     }
 
-    alert("បញ្ជូនទិន្នន័យទៅ Supabase ជោគជ័យ ១០០%! សូមពិនិត្យមើលក្នុង Supabase Dashboard");
+    alert(" បញ្ជូនទិន្នន័យទៅ Supabase ជោគជ័យ ១០០%!");
   } catch (err) {
+    console.error("Sync Error:", err);
     alert("មានបញ្ហាក្នុងការ Sync៖ " + err.message);
   }
 }

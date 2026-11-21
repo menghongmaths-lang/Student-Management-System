@@ -1,3 +1,6 @@
+const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const GRADES=[['A',90],['B',80],['C',70],['D',60],['E',50],['F',0]]; // និទ្ទេសតាម % នៃពិន្ទុអតិបរមា
 const CLASSES=[10,11,12].flatMap(g=>[...'ABCDE'].map(c=>g+c));
 const MN=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];

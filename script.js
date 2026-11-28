@@ -144,20 +144,64 @@ function renderLv(){
   $('#trackBox').innerHTML=CLASSES.filter(c=>gOf(c)!='10').map(c=>{const t=kOf(c).endsWith('soc');return`<label>${c}<select onchange="setCT('${c}',this.value)"><option value="sci" ${t?'':'selected'}>វិទ្យាសាស្ត្រ</option><option value="soc" ${t?'selected':''}>សង្គម</option></select></label>`}).join('')}
 function setLv(k){lv=k;renderLv();renderGrid()}
 function setCT(c,v){CT[c]=v;saveLocal();render()}
-function renderGrid(){const L=subsG(lv),T=L.reduce((a,x)=>a+x[1],0),cs=$('#scClass').value;
+
+// ===== កែប្រែ UI ត្រង់បង្ហាញ និងតម្រៀបមុខវិជ្ជា (បន្ថែម ⬆️ ⬇️) =====
+function renderGrid(){
+  const L=subsG(lv),T=L.reduce((a,x)=>a+x[1],0),cs=$('#scClass').value;
   const C=S.filter(s=>kOf(s.cls)==lv&&(cs=='ALL'||s.cls==cs));
-  $('#subjChips').innerHTML=L.map(([j,mx],k)=>`<span class="chip">${esc(j)} · ${mx} <small>(មេគុណ ${coef(mx)})</small><button onclick="rmSubject(${k})" aria-label="លុប">✕</button></span>`).join('')+`<span class="chip"><b>ពិន្ទុសរុប ${T} · មេគុណសរុប ${coef(T)}</b></span>`;
+  
+  $('#subjChips').innerHTML=L.map(([j,mx],k)=>`
+    <span class="chip" style="display:inline-flex;align-items:center;gap:4px;">
+      ${esc(j)} · ${mx} <small>(មេគុណ ${coef(mx)})</small>
+      <button onclick="moveSubj(${k},-1)" title="ឡើងលើ" ${k===0?'disabled':''}>⬆️</button>
+      <button onclick="moveSubj(${k},1)" title="ចុះក្រោម" ${k===L.length-1?'disabled':''}>⬇️</button>
+      <button onclick="rmSubject(${k})" aria-label="លុប">✕</button>
+    </span>
+  `).join('')+`<span class="chip"><b>ពិន្ទុសរុប ${T} · មេគុណសរុប ${coef(T)}</b></span>`;
+
   $('#scHead').innerHTML=`<tr><th>#</th><th>ឈ្មោះ</th><th>ថ្នាក់</th>${L.map(([j,mx])=>`<th>${esc(j)}<br><small>/${mx} · ×${coef(mx)}</small></th>`).join('')}<th>សរុប</th></tr>`;
   const none=CLASSES.some(c=>kOf(c)==lv)?'មិនមានសិស្សក្នុងកម្រិតនេះ':'មិនមានថ្នាក់ណាក្នុងកម្រិតនេះ — សូមកំណត់ឆាក់នៅខាងលើ';
-  $('#scBody').innerHTML=C.length?C.map((s,i)=>{const o=sc(s.id);return`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${s.cls}</td>${L.map(([j,mx],k)=>`<td><input class="num" type="number" min="0" max="${mx}" value="${o[j]??''}" onchange="setScore(${s.id},${k},this)"></td>`).join('')}<td id="av${s.id}">${tot(s)}</td></tr>`}).join(''):`<tr><td colspan="${L.length+4}" class="empty">${none}</td></tr>`}
+  $('#scBody').innerHTML=C.length?C.map((s,i)=>{const o=sc(s.id);return`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${s.cls}</td>${L.map(([j,mx],k)=>`<td><input class="num" type="number" min="0" max="${mx}" value="${o[j]??''}" onchange="setScore(${s.id},${k},this)"></td>`).join('')}<td id="av${s.id}">${tot(s)}</td></tr>`}).join(''):`<tr><td colspan="${L.length+4}" class="empty">${none}</td></tr>`;
+}
+
+// ===== FUNCTION ប្តូរលំដាប់មុខវិជ្ជា (ឡើងលើ/ចុះក្រោម) =====
+function moveSubj(k, dir) {
+  const g = lv, L = SUBJ[g] ??= cp(OFF[g] || []);
+  const targetIndex = k + dir;
+  if (targetIndex < 0 || targetIndex >= L.length) return;
+  
+  const temp = L[k];
+  L[k] = L[targetIndex];
+  L[targetIndex] = temp;
+  
+  saveLocal();
+  render();
+  pushSubjectOrderToSupabase();
+}
+
+// ===== FUNCTION បញ្ជូន POSITION ទៅ SUPABASE =====
+async function pushSubjectOrderToSupabase() {
+  try {
+    const L = subsG(lv);
+    const records = L.map(([subj, max_score], idx) => ({
+      level: lv,
+      subject: subj,
+      max_score: max_score,
+      position: idx + 1
+    }));
+    await _supabase.from('level_subjects').upsert(records, { onConflict: 'level,subject' });
+  } catch (e) {
+    console.warn('Error syncing subject positions:', e);
+  }
+}
 
 function setScore(id,k,el){const [j,mx]=subsG(lv)[k],o=((SC[id]??={})[mo()]??={});
   if(el.value==='')delete o[j];else{o[j]=Math.min(mx,Math.max(0,Math.round(+el.value*10)/10));el.value=o[j]}
   save('scores', id);$('#av'+id).innerHTML=tot(S.find(s=>s.id==id));renderRest()}
 function addSubject(){const g=lv;
   const v=$('#newSubj').value.trim(),mx=+$('#newMax').value;if(!v||!(mx>0))return alert('សូមបញ្ចូលឈ្មោះ និងពិន្ទុអតិបរមា');
-  const L=SUBJ[g]??=cp(OFF[g]||[]);if(L.some(x=>x[0]==v))return;L.push([v,mx]);$('#newSubj').value='';$('#newMax').value='';saveLocal();render()}
-function rmSubject(k){const g=lv,L=SUBJ[g]??=cp(OFF[g]||[]);if(!confirm('លុបមុខវិជ្ជា "'+L[k][0]+'" ចេញពី '+LV.find(x=>x[0]==g)[1]+'?'))return;L.splice(k,1);saveLocal();render()}
+  const L=SUBJ[g]??=cp(OFF[g]||[]);if(L.some(x=>x[0]==v))return;L.push([v,mx]);$('#newSubj').value='';$('#newMax').value='';saveLocal();render();pushSubjectOrderToSupabase();}
+function rmSubject(k){const g=lv,L=SUBJ[g]??=cp(OFF[g]||[]);if(!confirm('លុបមុខវិជ្ជា "'+L[k][0]+'" ចេញពី '+LV.find(x=>x[0]==g)[1]+'?'))return;L.splice(k,1);saveLocal();render();pushSubjectOrderToSupabase();}
 
 function renderAt(){const C=inCls(),d=$('#atDay').value,c={P:0,L:0,X:0,N:0};
   C.forEach(s=>c[(AT[s.id]||{})[d]||'N']++);
@@ -358,24 +402,22 @@ function exportToExcel(){const C=inCls(),R=ranks(C),g=G();
   const t=rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+t],{type:'text/csv'}));a.download=`ពិន្ទុសិស្ស-${MN[+mo()-1]}.csv`;a.click()}
 
-function resetSubj(){const g=lv;if(!confirm('ស្ដារមុខវិជ្ជា និងពិន្ទុអតិបរមាតាមរបបផ្លូវការ?'))return;SUBJ[g]=cp(OFF[g]);saveLocal();render()}
+function resetSubj(){const g=lv;if(!confirm('ស្ដារមុខវិជ្ជា និងពិន្ទុអតិបរមាតាមរបបផ្លូវការ?'))return;SUBJ[g]=cp(OFF[g]);saveLocal();render();pushSubjectOrderToSupabase();}
 
 // ===== 8. INITIALIZATION =====
 renderSem();
 switchRole('teacher');
 showTab('pDash');
 render();
-syncFromSupabase(); // ស្ទូច Data ពី Supabase នៅពេល App បើកដំបូង
+syncFromSupabase();
 
-// ===== មុខងារ Auto Sync ទិន្នន័យទៅ Supabase ដោយស្វ័យប្រវត្តិ (Silent Mode) =====
+// ===== មុខងារ Auto Sync ទិន្នន័យទៅ Supabase ដោយស្វ័យប្រវត្តិ =====
 async function pushAllToSupabase(isManual = false) {
-  // ប្រសិនបើចុចប៊ូតុង Sync ដោយដៃ ទើបលោត Alert ប្រាប់
   if (isManual) {
     alert("កំពុងបញ្ជូនទិន្នន័យទៅ Supabase... សូមរង់ចាំមួយភ្លែត!");
   }
 
   try {
-    // 1. ស្វែងរក Array សិស្សគ្រប់រូបភាពដែលមានក្នុង Script
     let rawStudents = [];
     if (typeof S !== 'undefined' && Array.isArray(S) && S.length > 0) {
       rawStudents = S;
@@ -393,7 +435,6 @@ async function pushAllToSupabase(isManual = false) {
       return;
     }
 
-    // 2. Format ទិន្នន័យឱ្យត្រូវ Integer ID និង Field Name
     const formattedStudents = rawStudents.map((s, idx) => {
       let numericId = parseInt(s.id, 10);
       if (isNaN(numericId)) numericId = idx + 1;
@@ -405,14 +446,12 @@ async function pushAllToSupabase(isManual = false) {
       };
     });
 
-    // 3. Upsert ចូល Table students
     const { error: e1 } = await _supabase.from('students').upsert(formattedStudents);
     if (e1) {
       if (isManual) alert("មានបញ្ហា Insert សិស្ស៖ " + e1.message);
       return;
     }
 
-    // 4. Upsert ពិន្ទុ
     if (typeof SC !== 'undefined' && SC) {
       for (const id in SC) {
         let numId = parseInt(id, 10);
@@ -424,7 +463,6 @@ async function pushAllToSupabase(isManual = false) {
       }
     }
 
-    // 5. Upsert វត្តមាន
     if (typeof AT !== 'undefined' && AT) {
       for (const id in AT) {
         let numId = parseInt(id, 10);
@@ -434,7 +472,9 @@ async function pushAllToSupabase(isManual = false) {
       }
     }
 
-    // ប្រសិនបើជាការ Sync ដោយដៃ ទើបបង្ហាញ Alert
+    // Sync លំដាប់មុខវិជ្ជាទៅ Supabase ជាមួយគ្នា
+    await pushSubjectOrderToSupabase();
+
     if (isManual) {
       alert("បញ្ជូនទិន្នន័យទៅ Supabase ជោគជ័យ ១០០%!");
     } else {
